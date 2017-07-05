@@ -1,22 +1,25 @@
-from setuptools import setup, find_packages
 import os
+from setuptools import setup, find_packages
 
-version = '0.1.0'
-install_requires = [
+VERSION = '0.1.0'
+INSTALL_REQUIRES = [
     'setuptools',
     'openprocurement.auction',
     'openprocurement.auction.worker'
 ]
-extras_require = {
+EXTRAS_REQUIRE = {
 }
-entry_points = {
+ENTRY_POINTS = {
     'console_scripts': [
-        'auction_worker = openprocurement.auction.esco.cli:main',
+        'auction_escoworker = openprocurement.auction.esco.cli:main',
+    ],
+    'openprocurement.auction.auctions': [
+        'esco.EU = openprocurement.auction.esco.includeme:includeme'
     ]
 }
 
 setup(name='openprocurement.auction.esco',
-      version=version,
+      version=VERSION,
       description="",
       long_description=open("README.txt").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
@@ -35,7 +38,7 @@ setup(name='openprocurement.auction.esco',
       namespace_packages=['openprocurement', 'openprocurement.auction'],
       include_package_data=True,
       zip_safe=False,
-      install_requires=install_requires,
-      extras_require=extras_require,
-      entry_points=entry_points,
+      install_requires=INSTALL_REQUIRES,
+      extras_require=EXTRAS_REQUIRE,
+      entry_points=ENTRY_POINTS
       )
