@@ -8,6 +8,10 @@ INSTALL_REQUIRES = [
     'openprocurement.auction.worker'
 ]
 EXTRAS_REQUIRE = {
+    'test': [
+        'pytest',
+        'pytest-cov'
+    ]
 }
 ENTRY_POINTS = {
     'console_scripts': [
