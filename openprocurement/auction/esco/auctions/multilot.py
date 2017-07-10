@@ -1,3 +1,6 @@
+from openprocurement.auction.worker.auctions import multilot
+
+
 FORMATTER = lambda **kw: "{}_{}".format(kw.get('tender_id'), kw.get('lot_id'))
 
 # Indentical methods
