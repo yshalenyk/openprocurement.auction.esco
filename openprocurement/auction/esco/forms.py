@@ -1,6 +1,6 @@
 from flask import request, session, current_app as app
 from fractions import Fraction
-from wtforms import Form, DecimalField, StringField
+from wtforms import Form, DecimalField, StringField, IntegerField
 from wtforms.validators import InputRequired, ValidationError, StopValidation, NumberRange
 from wtforms_json import init; init()
 
@@ -18,6 +18,22 @@ def validate_value(form, field):
     data = Fraction(field.data)
     if data <= Fraction('0') and data != -1:
         raise ValidationError(u'To low value')
+
+
+def _npv(form):
+    nbu_rate = form.auction.auction_document['NBUdiscountRate']
+    annual_costs_reduction = form.auction.auction_document['value']['annualCostsReduction']
+    yearlyPayments = form.yearlyPayments or form.auction.auction_document['value']['yearlyPayments']
+    contractDuration = form.contractDuration or form.auction.auction_document['value']['contractDuration']
+    if form.yearlyPaymentsPercentage:
+        return calculate_npv(nbu_rate, annual_costs_reduction, None,
+                             contractDuration,
+                             yearlyPaymentsPercentage=form.yearlyPaymentsPercentage,
+                             contractDurationDays=form.contractDurationDays)
+    else:
+        return calculate_npv(nbu_rate, annual_costs_reduction,
+                             yearlyPayments, contractDuration,
+                             contractDurationDays=form.contractDurationDays)
 
 
 def validate_bid_change_on_bidding(form, amount_npv):
@@ -51,12 +67,10 @@ class BidsForm(Form):
         'yearlyPaymentsPercentage',
         validators=[validate_value]
     )
-
     contractDuration = IntegerField(
         'contractDuration',
         validators=[NumberRange(1, MAX_CONTRACT_DURATION)]
     )
-
     contractDurationDays = IntegerField(
         'contractDurationDays',
         validators=[NumberRange(1, DAYS_IN_YEAR)]
@@ -71,11 +85,13 @@ class BidsForm(Form):
         if super(BidsForm, self).validate():
             # TODO:
             if not any([self.yearlyPaymentsPercentage, self.yearlyPayments]):
-                raise ValidationError(u'Provide either yearlyPaymentsPercentage or bid_yearlyPayments')
+                raise ValidationError(u'Provide either yearlyPaymentsPercentage or yearlyPayments')
             if self.contractDurationDays and self.contractDuration:
                 if (Fraction(contractDurationDays, DAYS_IN_YEAR) + self.contractDuration) > MAX_CONTRACT_DURATION:
                     raise ValidationError(u'Maximun contract duration is 15 years')
-            amount = calculate_npv(self.data) # TODO:
+            if self.yearlyPayments == -1 or self.yearlyPaymentsPercentage == -1:
+                return -1
+            amount = _npv(self)
             stage_id = self.document['current_stage']
             if self.document['stages'][stage_id]['type'] == 'bids':
                 validate_bid_change_on_bidding(self, amount)
