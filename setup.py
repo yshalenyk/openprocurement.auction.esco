@@ -15,7 +15,7 @@ EXTRAS_REQUIRE = {
 }
 ENTRY_POINTS = {
     'console_scripts': [
-        'auction_escoworker = openprocurement.auction.esco.cli:main',
+        'auction_esco = openprocurement.auction.esco.cli:main',
     ],
     'openprocurement.auction.auctions': [
         'esco.EU = openprocurement.auction.esco.includeme:includeme'
