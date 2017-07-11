@@ -151,5 +151,6 @@ class Auction(EscoDBMixin,
             self.convert_datetime(self.auction_document['stages'][-2]['start']),
             LOGGER,
             form_hander=form_hander,
-            bids_form=BidsForm
+            bids_form=BidsForm,
+            cookie_path="esco-tenders"
             )
