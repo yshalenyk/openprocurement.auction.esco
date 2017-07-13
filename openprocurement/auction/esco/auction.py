@@ -161,7 +161,7 @@ class Auction(ESCODBServiceMixin,
             self,
             self.convert_datetime(self.auction_document['stages'][-2]['start']),
             LOGGER,
-            form_hander=form_hander,
+            form_handler=form_handler,
             bids_form=BidsForm,
             cookie_path="esco-tenders"
             )
