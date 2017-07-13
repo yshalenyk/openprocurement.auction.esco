@@ -1,11 +1,14 @@
 from flask import request, session, current_app as app
 from fractions import Fraction
+from datetime import datetime
+from pytz import timezone
 from wtforms import Form, DecimalField, StringField, IntegerField
 from wtforms.validators import InputRequired, ValidationError, StopValidation, NumberRange
 from wtforms_json import init; init()
 
 from openprocurement.auction.esco.constants import DAYS_IN_YEAR, MAX_CONTRACT_DURATION
-from openprocurement.auction.esco.utils import calculate_npv 
+from openprocurement.auction.esco.utils import calculate_npv
+from openprocurement.auction.utils import prepare_extra_journal_fields
 
 
 def validate_bidder_id_on_bidding(form, field):
@@ -87,7 +90,7 @@ class BidsForm(Form):
             if not any([self.yearlyPaymentsPercentage, self.yearlyPayments]):
                 raise ValidationError(u'Provide either yearlyPaymentsPercentage or yearlyPayments')
             if self.contractDurationDays and self.contractDuration:
-                if (Fraction(contractDurationDays, DAYS_IN_YEAR) + self.contractDuration) > MAX_CONTRACT_DURATION:
+                if (Fraction(self.contractDurationDays, DAYS_IN_YEAR) + self.contractDuration) > MAX_CONTRACT_DURATION:
                     raise ValidationError(u'Maximun contract duration is 15 years')
             if self.yearlyPayments == -1 or self.yearlyPaymentsPercentage == -1:
                 return -1
@@ -97,7 +100,7 @@ class BidsForm(Form):
                 validate_bid_change_on_bidding(self, amount)
             else:
                 raise ValidationError(u'Stage not for bidding')
-            return amount 
+            return amount
         return False
 
 
@@ -111,7 +114,7 @@ def form_handler():
         total_amount = form.validate()
         if total_amount:
             # write data
-            auction.add_bid(form.document['current_stage'],{
+            auction.add_bid(form.document['current_stage'], {
                 'bidder_id': form.data['bidder_id'],
                 'amount': total_amount,
                 'contractDuration': form.data['contractDuration'],
