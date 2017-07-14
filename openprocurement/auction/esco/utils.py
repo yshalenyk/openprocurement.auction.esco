@@ -1,6 +1,24 @@
+# -*- coding: utf-8 -*-
+
 from fractions import Fraction
 
 from openprocurement.auction.esco.constants import NPV_CALCULATION_DURATION, DAYS_IN_YEAR
+
+def prepare_initial_bid_stage(bidder_name="", bidder_id="", time="",
+                              amount_features="", coeficient="", amount="", annualCostsReduction=""):
+    stage = dict(bidder_id=bidder_id, time=str(time))
+    stage["label"] = dict(
+        en="Bidder #{}".format(bidder_name),
+        uk="Учасник №{}".format(bidder_name),
+        ru="Участник №{}".format(bidder_name)
+    )
+    stage['amount'] = amount if amount else 0
+    stage['annualCostsReduction'] = annualCostsReduction if annualCostsReduction else 0
+    if amount_features is not None and amount_features != "":
+        stage['amount_features'] = str(amount_features)
+    if coeficient:
+        stage['coeficient'] = str(coeficient)
+    return stage
 
 
 def calculate_npv(nbu_rate,
@@ -8,13 +26,13 @@ def calculate_npv(nbu_rate,
                   yearly_payments,
                   contract_duration,
                   yearlyPaymentsPercentage=0.0,
-                  contract_duration_days=0
+                  contractDurationDays=0
                  ):
     assert not (yearly_payments and yearlyPaymentsPercentage)
     if yearlyPaymentsPercentage:
         yearly_payments = calculate_yearly_payments(annual_costs_reduction, yearlyPaymentsPercentage)
-    if contract_duration_days:
-        CF_incomplete = lambda n: Fraction(Fraction("{}/{}".format(contract_duration_days, DAYS_IN_YEAR)) * yearly_payments) if n == int(contract_duration + 1) else 0
+    if contractDurationDays:
+        CF_incomplete = lambda n: Fraction(Fraction("{}/{}".format(contractDurationDays, DAYS_IN_YEAR)) * yearly_payments) if n == int(contract_duration + 1) else 0
     else:
         CF_incomplete = lambda n: 0
     CF = lambda n: yearly_payments if n <= int(contract_duration) else CF_incomplete(n)
@@ -25,7 +43,7 @@ def calculate_npv(nbu_rate,
 
 
 def calculate_yearly_payments(annual_costs_reduction, yearlyPaymentsPercentage):
-    return Fraction(annual_costs_reduction * yearlyPaymentsPercentage)
+    return Fraction(annual_costs_reduction) * Fraction(yearlyPaymentsPercentage)
 
 
 def post_results_data(self, with_auctions_results=True):
