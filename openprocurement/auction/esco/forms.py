@@ -25,18 +25,22 @@ def validate_value(form, field):
 
 def _npv(form):
     nbu_rate = form.auction.auction_document['NBUdiscountRate']
-    annual_costs_reduction = form.auction.auction_document['value']['annualCostsReduction']
-    yearlyPayments = form.yearlyPayments or form.auction.auction_document['value']['yearlyPayments']
-    contractDuration = form.contractDuration or form.auction.auction_document['value']['contractDuration']
-    if form.yearlyPaymentsPercentage:
-        return calculate_npv(nbu_rate, annual_costs_reduction, None,
+    for bid in form.document['initial_bids']:
+        if bid['bidder_id'] == form.bidder_id.data:
+            annual_costs_reduction = bid['annualCostsReduction']
+    yearlyPayments = form.yearlyPayments.data
+    contractDuration = form.contractDuration.data
+    if form.yearlyPaymentsPercentage.data:
+        result = calculate_npv(nbu_rate, annual_costs_reduction, None,
                              contractDuration,
-                             yearlyPaymentsPercentage=form.yearlyPaymentsPercentage,
-                             contractDurationDays=form.contractDurationDays)
+                             yearlyPaymentsPercentage=form.yearlyPaymentsPercentage.data,
+                             contractDurationDays=form.contractDurationDays.data)
     else:
-        return calculate_npv(nbu_rate, annual_costs_reduction,
+        result = calculate_npv(nbu_rate, annual_costs_reduction,
                              yearlyPayments, contractDuration,
-                             contractDurationDays=form.contractDurationDays)
+                             contractDurationDays=form.contractDurationDays.data)
+
+    return round(float(result), 2)
 
 
 def validate_bid_change_on_bidding(form, amount_npv):
@@ -87,12 +91,12 @@ class BidsForm(Form):
     def validate(self):
         if super(BidsForm, self).validate():
             # TODO:
-            if not any([self.yearlyPaymentsPercentage, self.yearlyPayments]):
+            if not any([self.yearlyPaymentsPercentage.data, self.yearlyPayments.data]):
                 raise ValidationError(u'Provide either yearlyPaymentsPercentage or yearlyPayments')
-            if self.contractDurationDays and self.contractDuration:
-                if (Fraction(self.contractDurationDays, DAYS_IN_YEAR) + self.contractDuration) > MAX_CONTRACT_DURATION:
+            if self.contractDurationDays.data and self.contractDuration.data:
+                if (Fraction(self.contractDurationDays.data, DAYS_IN_YEAR) + self.contractDuration.data) > MAX_CONTRACT_DURATION:
                     raise ValidationError(u'Maximun contract duration is 15 years')
-            if self.yearlyPayments == -1 or self.yearlyPaymentsPercentage == -1:
+            if self.yearlyPayments.data == -1 or self.yearlyPaymentsPercentage.data == -1:
                 return -1
             amount = _npv(self)
             stage_id = self.document['current_stage']
