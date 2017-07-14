@@ -33,8 +33,9 @@ from openprocurement.auction.esco.journal import (
     AUCTION_WORKER_SERVICE_PREPARE_SERVER,
     AUCTION_WORKER_SERVICE_END_FIRST_PAUSE
 )
-from openprocurement.auction.worker.utils import \
-    prepare_initial_bid_stage, prepare_results_stage
+from openprocurement.auction.worker.utils import  prepare_results_stage
+
+from openprocurement.auction.esco.utils import prepare_initial_bid_stage
 
 from openprocurement.auction.utils import\
     get_latest_bid_for_bidder, sorting_by_amount,\
@@ -215,7 +216,8 @@ class Auction(ESCODBServiceMixin,
                     bidder_name=self.mapping[bid["id"]],
                     amount=amount,
                     coeficient=coeficient,
-                    amount_features=amount_features
+                    amount_features=amount_features,
+                    annualCostsReduction=bid["value"]["annualCostsReduction"]
                 )
             )
         if isinstance(switch_to_round, int):
