@@ -7,8 +7,8 @@ from barbecue import cooking
 from openprocurement.auction.utils import\
     get_latest_bid_for_bidder, sorting_by_amount,\
     sorting_start_bids_by_amount
-from openprocurement.auction.worker.utils import prepare_bids_stage,\
-    prepare_service_stage, prepare_initial_bid_stage, prepare_results_stage
+from openprocurement.auction.worker.utils import\
+    prepare_service_stage, prepare_results_stage, prepare_bids_stage
 from openprocurement.auction.worker.constants import ROUNDS, BIDS_SECONDS,\
     FIRST_PAUSE_SECONDS, PAUSE_SECONDS
 from openprocurement.auction.worker.journal import (
@@ -18,6 +18,7 @@ from openprocurement.auction.worker.journal import (
     AUCTION_WORKER_SERVICE_START_NEXT_STAGE,
 )
 from openprocurement.auction.esco.auctions import simple, multilot
+from openprocurement.auction.esco.utils import prepare_initial_bid_stage
 from openprocurement.auction.worker.mixins import DBServiceMixin,\
     PostAuctionServiceMixin, StagesServiceMixin, BiddersServiceMixin
 
@@ -142,6 +143,7 @@ class EscoStagesMixin(StagesServiceMixin):
         bids_info = sorting_start_bids_by_amount(bids, features=self.features)
         for index, bid in enumerate(bids_info):
             amount = bid["value"]["amount"]
+            annualCostsReduction = bid["value"]["annualCostsReduction"]
             if self.features:
                 amount_features = cooking(
                     amount,
@@ -158,7 +160,8 @@ class EscoStagesMixin(StagesServiceMixin):
                 bidder_name=self.mapping[bid["id"]],
                 amount=amount,
                 coeficient=coeficient,
-                amount_features=amount_features
+                amount_features=amount_features,
+                annualCostsReduction=annualCostsReduction
             )
             self.auction_document["initial_bids"].append(
                 initial_bid_stage
@@ -179,7 +182,7 @@ class EscoStagesMixin(StagesServiceMixin):
                     'bidder_id': '',
                     'bidder_name': '',
                     'amount': '0',
-                    'time': ''
+                    'time': '',
                 })
                 self.auction_document['stages'].append(bid_stage)
                 next_stage_timedelta += timedelta(seconds=BIDS_SECONDS)
@@ -286,7 +289,8 @@ class EscoStagesMixin(StagesServiceMixin):
                     time="",
                     bidder_id=bid_info["id"],
                     bidder_name=self.mapping[bid_info["id"]],
-                    amount="0"
+                    amount="0",
+                    annualCostsReduction="0"
                 )
             )
         self.auction_document['stages'] = []
@@ -310,7 +314,7 @@ class EscoStagesMixin(StagesServiceMixin):
                     'bidder_id': '',
                     'bidder_name': '',
                     'amount': '0',
-                    'time': ''
+                    'time': '',
                 })
 
                 self.auction_document['stages'].append(bid_stage)
