@@ -25,14 +25,16 @@ def validate_value(form, field):
 
 def _npv(form):
     nbu_rate = form.auction.auction_document['NBUdiscountRate']
+    annual_costs_reduction = 0
     for bid in form.document['initial_bids']:
         if bid['bidder_id'] == form.bidder_id.data:
             annual_costs_reduction = bid['annualCostsReduction']
             yearlyPayments = form.yearlyPayments.data or bid['yearlyPayments']
             contractDuration = form.contractDuration.data or bid['contractDuration']
             break
-        else:
-            return False
+
+    if not annual_costs_reduction:
+        return False
     if form.yearlyPaymentsPercentage.data:
         result = calculate_npv(nbu_rate, annual_costs_reduction, None,
                              contractDuration,
