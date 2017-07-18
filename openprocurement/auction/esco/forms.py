@@ -28,8 +28,11 @@ def _npv(form):
     for bid in form.document['initial_bids']:
         if bid['bidder_id'] == form.bidder_id.data:
             annual_costs_reduction = bid['annualCostsReduction']
-    yearlyPayments = form.yearlyPayments.data
-    contractDuration = form.contractDuration.data
+            yearlyPayments = form.yearlyPayments.data or bid['yearlyPayments']
+            contractDuration = form.contractDuration.data or bid['contractDuration']
+            break
+        else:
+            return False
     if form.yearlyPaymentsPercentage.data:
         result = calculate_npv(nbu_rate, annual_costs_reduction, None,
                              contractDuration,
@@ -76,11 +79,11 @@ class BidsForm(Form):
     )
     contractDuration = IntegerField(
         'contractDuration',
-        validators=[NumberRange(1, MAX_CONTRACT_DURATION)]
+        validators=[NumberRange(0, MAX_CONTRACT_DURATION)]
     )
     contractDurationDays = IntegerField(
         'contractDurationDays',
-        validators=[NumberRange(1, DAYS_IN_YEAR)]
+        validators=[NumberRange(0, DAYS_IN_YEAR)]
     )
 
     def validate_bidder_id(self, field):
@@ -90,7 +93,7 @@ class BidsForm(Form):
 
     def validate(self):
         if super(BidsForm, self).validate():
-            # TODO:
+            # TODO: use default contractDurationDays if not provided
             if not any([self.yearlyPaymentsPercentage.data, self.yearlyPayments.data]):
                 raise ValidationError(u'Provide either yearlyPaymentsPercentage or yearlyPayments')
             if self.contractDurationDays.data and self.contractDuration.data:
