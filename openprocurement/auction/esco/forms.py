@@ -94,20 +94,23 @@ class BidsForm(Form):
     def validate(self):
         if super(BidsForm, self).validate():
             # TODO: use default contractDurationDays if not provided
-            if not any([self.yearlyPaymentsPercentage.data, self.yearlyPayments.data]):
-                raise ValidationError(u'Provide either yearlyPaymentsPercentage or yearlyPayments')
-            if self.contractDurationDays.data and self.contractDuration.data:
-                if (Fraction(self.contractDurationDays.data, DAYS_IN_YEAR) + self.contractDuration.data) > MAX_CONTRACT_DURATION:
-                    raise ValidationError(u'Maximun contract duration is 15 years')
-            if self.yearlyPayments.data == -1 or self.yearlyPaymentsPercentage.data == -1:
-                return -1
-            amount = _npv(self)
-            stage_id = self.document['current_stage']
-            if self.document['stages'][stage_id]['type'] == 'bids':
-                validate_bid_change_on_bidding(self, amount)
-            else:
-                raise ValidationError(u'Stage not for bidding')
-            return amount
+            try:
+                if not any([self.yearlyPaymentsPercentage.data, self.yearlyPayments.data]):
+                    raise ValidationError(u'Provide either yearlyPaymentsPercentage or yearlyPayments')
+                if self.contractDurationDays.data and self.contractDuration.data:
+                    if (Fraction(self.contractDurationDays.data, DAYS_IN_YEAR) + self.contractDuration.data) > MAX_CONTRACT_DURATION:
+                        raise ValidationError(u'Maximun contract duration is 15 years')
+                if self.yearlyPayments.data == -1 or self.yearlyPaymentsPercentage.data == -1:
+                    return -1
+                amount = _npv(self)
+                stage_id = self.document['current_stage']
+                if self.document['stages'][stage_id]['type'] == 'bids':
+                    validate_bid_change_on_bidding(self, amount)
+                else:
+                    raise ValidationError(u'Stage not for bidding')
+                return amount
+            except ValidationError as e:
+                return False
         return False
 
 
