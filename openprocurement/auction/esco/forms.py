@@ -14,12 +14,14 @@ from openprocurement.auction.utils import prepare_extra_journal_fields
 def validate_bidder_id_on_bidding(form, field):
     stage_id = form.document['current_stage']
     if field.data != form.document['stages'][stage_id]['bidder_id']:
+        form[field.name].errors.append(u'Not valid bidder')
         raise StopValidation(u'Not valid bidder')
 
 
 def validate_value(form, field):
     data = Fraction(field.data)
     if data <= Fraction('0') and data != -1:
+        form[field.name].errors.append(u'To low value')
         raise ValidationError(u'To low value')
 
 
@@ -58,10 +60,16 @@ def validate_bid_change_on_bidding(form, amount_npv):
         _max = Fraction(max_bid) * form.auction.bidders_coeficient[form.data['bidder_id']]
         _max += Fraction(form.document['minimalStep']['amount'])
         if amount_npv < _max:
+            errors = form.errors.get('form', [])
+            errors.append(u'Amount nvp: Too low value')
+            form.errors['form'] = errors
             raise ValidationError(u'Too low value')
     else:
         max_bid = form.document['stages'][stage_id]['amount']
         if amount_npv < (max_bid + form.document['minimalStep']['amount']):
+            errors = form.errors.get('form', [])
+            errors.append(u'Amount nvp: Too low value')
+            form.errors['form'] = errors
             raise ValidationError(u'Too low value')
 
 
@@ -97,11 +105,13 @@ class BidsForm(Form):
         if super(BidsForm, self).validate():
             # TODO: use default contractDurationDays if not provided
             try:
-                if not any([self.yearlyPaymentsPercentage.data, self.yearlyPayments.data]):
-                    raise ValidationError(u'Provide either yearlyPaymentsPercentage or yearlyPayments')
+                if not self.yearlyPaymentsPercentage.data:
+                    self.yearlyPaymentsPercentage.errors.append(u'Provide either yearlyPaymentsPercentage')
+                if not self.yearlyPayments.data:
+                    self.yearlyPaymentsPercentage.errors.append(u'Provide either yearlyPayments')
                 if self.contractDurationDays.data and self.contractDuration.data:
                     if (Fraction(self.contractDurationDays.data, DAYS_IN_YEAR) + self.contractDuration.data) > MAX_CONTRACT_DURATION:
-                        raise ValidationError(u'Maximun contract duration is 15 years')
+                        self.contractDurationDays.errors.append(u'Maximun contract duration is 15 years')
                 if self.yearlyPayments.data == -1 or self.yearlyPaymentsPercentage.data == -1:
                     return -1
                 amount = _npv(self)
@@ -109,7 +119,10 @@ class BidsForm(Form):
                 if self.document['stages'][stage_id]['type'] == 'bids':
                     validate_bid_change_on_bidding(self, amount)
                 else:
-                    raise ValidationError(u'Stage not for bidding')
+                    errors = self.errors.get('form', [])
+                    errors.append(u'Stage not for bidding')
+                    self.errors['form'] = errors
+                    raise ValidatiosnError(u'Stage not for bidding')
                 return amount
             except ValidationError as e:
                 return False
