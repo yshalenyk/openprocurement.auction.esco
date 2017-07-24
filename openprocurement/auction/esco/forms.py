@@ -26,8 +26,8 @@ def validate_value(form, field):
 
 
 def validate_yearly_payments_percentage(form, field):
-    data = Fraction(field.data)
-    if Fraction(0) > Fraction(data) < Fraction(100):
+    data = field.data
+    if not Fraction(0) <= Fraction(data) <= Fraction(100):
         message = u'Percentage value must be between 0 and 100'
         form[field.name].errors.append(message)
         raise ValidationError(message)
@@ -69,7 +69,7 @@ def validate_bid_change_on_bidding(form, amount_npv):
         _max += Fraction(form.document['minimalStep']['amount'])
         if amount_npv < _max:
             errors = form.errors.get('form', [])
-            message = u'Amount nvp: Too low value'
+            message = u'Amount NPV: Too low value'
             errors.append(message)
             form.errors['form'] = errors
             raise ValidationError(message)
@@ -77,7 +77,7 @@ def validate_bid_change_on_bidding(form, amount_npv):
         max_bid = form.document['stages'][stage_id]['amount']
         if amount_npv < (max_bid + form.document['minimalStep']['amount']):
             errors = form.errors.get('form', [])
-            message = u'Amount nvp: Too low value'
+            message = u'Amount NPV: Too low value'
             errors.append(message)
             form.errors['form'] = errors
             raise ValidationError(message)

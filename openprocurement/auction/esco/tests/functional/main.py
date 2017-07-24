@@ -32,7 +32,7 @@ def update_auctionPeriod(path, auction_type):
 def run_esco(tender_file_path, auction_id):
     with update_auctionPeriod(tender_file_path, auction_type='esco') as auction_file:
         check_output('{0}/bin/auction_esco planning {1}'
-                     ' {0}/etc/auction_worker_defaults.yaml --planning_procerude partial_db --auction_info {2}'.format(CWD, auction_id, auction_file).split())
+                     ' {0}/etc/auction_worker_esco.yaml --planning_procerude partial_db --auction_info {2}'.format(CWD, auction_id, auction_file).split())
     sleep(30)
 
 
