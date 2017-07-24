@@ -25,6 +25,14 @@ def validate_value(form, field):
         raise ValidationError(u'To low value')
 
 
+def validate_yearly_payments_percentage(form, field):
+    data = Fraction(field.data)
+    if Fraction(0) > Fraction(data) < Fraction(100):
+        message = u'Percentage value must be between 0 and 100'
+        form[field.name].errors.append(message)
+        raise ValidationError(message)
+
+
 def _npv(form):
     nbu_rate = form.auction.auction_document['NBUdiscountRate']
     annual_costs_reduction = 0
@@ -61,16 +69,18 @@ def validate_bid_change_on_bidding(form, amount_npv):
         _max += Fraction(form.document['minimalStep']['amount'])
         if amount_npv < _max:
             errors = form.errors.get('form', [])
-            errors.append(u'Amount nvp: Too low value')
+            message = u'Amount nvp: Too low value'
+            errors.append(message)
             form.errors['form'] = errors
-            raise ValidationError(u'Too low value')
+            raise ValidationError(message)
     else:
         max_bid = form.document['stages'][stage_id]['amount']
         if amount_npv < (max_bid + form.document['minimalStep']['amount']):
             errors = form.errors.get('form', [])
-            errors.append(u'Amount nvp: Too low value')
+            message = u'Amount nvp: Too low value'
+            errors.append(message)
             form.errors['form'] = errors
-            raise ValidationError(u'Too low value')
+            raise ValidationError(message)
 
 
 class BidsForm(Form):
@@ -85,7 +95,7 @@ class BidsForm(Form):
     )
     yearlyPaymentsPercentage = DecimalField(
         'yearlyPaymentsPercentage',
-        validators=[validate_value]
+        validators=[validate_yearly_payments_percentage]
     )
     contractDuration = IntegerField(
         'contractDuration',
@@ -120,9 +130,10 @@ class BidsForm(Form):
                     validate_bid_change_on_bidding(self, amount)
                 else:
                     errors = self.errors.get('form', [])
-                    errors.append(u'Stage not for bidding')
+                    message = u'Stage not for bidding'
+                    errors.append(message)
                     self.errors['form'] = errors
-                    raise ValidatiosnError(u'Stage not for bidding')
+                    raise ValidationError(message)
                 return amount
             except ValidationError as e:
                 return False
