@@ -36,6 +36,12 @@
     Поставити ставку   ${last_amount}   Заявку прийнято
 
 
+Поставити мінімально допустиму ставку
+    [Arguments]  ${years}  ${days}  ${percent}
+    Wait Until Page Contains Element    id=max_bid_amount_price
+    Поставити ставку еско  ${years}  ${days}  ${percent}   Заявку прийнято
+
+
 Поставити велику ціну в ставці
     [Arguments]    ${extra_amount}
     Wait Until Page Contains Element    id=max_bid_amount_price
@@ -44,6 +50,19 @@
     ${last_amount}=     convert_amount_to_number    ${last_amount}
     ${last_amount}=    Evaluate      ${last_amount}+${extra_amount}
     Поставити ставку   ${last_amount}   Надто висока заявка
+
+Поставити ставку еско
+    [Arguments]  ${years}  ${days}  ${percent}  ${msg}
+    Input Text  id=contract-duration-years-input  ${years}
+    Input Text  id=contract-duration-days-input  ${days}
+    Input Text  id=yearly-payments-percentage  ${percent}
+    sleep  1s
+    Capture Page Screenshot
+    Highlight Elements With Text On Time    Зробити заявку
+    Click Element                id=place-bid-button
+    Wait Until Page Contains     ${msg}    10s
+    Highlight Elements With Text On Time    ${msg}
+    Capture Page Screenshot
 
 Поставити ставку
     [Arguments]    ${amount}  ${msg}
