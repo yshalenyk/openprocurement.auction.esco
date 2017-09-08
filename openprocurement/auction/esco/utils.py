@@ -23,14 +23,10 @@ def prepare_initial_bid_stage(bidder_name="", bidder_id="", time="",
 
 def calculate_npv(nbu_rate,
                   annual_costs_reduction,
-                  yearly_payments,
                   contract_duration,
                   yearlyPaymentsPercentage=0.0,
-                  contractDurationDays=0
-                 ):
-    assert not (yearly_payments and yearlyPaymentsPercentage)
-    if yearlyPaymentsPercentage:
-        yearly_payments = calculate_yearly_payments(annual_costs_reduction, yearlyPaymentsPercentage)
+                  contractDurationDays=0):
+    yearly_payments = calculate_yearly_payments(annual_costs_reduction, yearlyPaymentsPercentage)
     if contractDurationDays:
         CF_incomplete = lambda n: Fraction(Fraction("{}/{}".format(contractDurationDays, DAYS_IN_YEAR)) * yearly_payments) if n == int(contract_duration + 1) else 0
     else:
