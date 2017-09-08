@@ -39,21 +39,20 @@ def _npv(form):
     for bid in form.document['initial_bids']:
         if bid['bidder_id'] == form.bidder_id.data:
             annual_costs_reduction = bid['annualCostsReduction']
-            yearlyPayments = form.yearlyPayments.data or bid['yearlyPayments']
-            contractDuration = form.contractDuration.data or bid['contractDuration']
+            contract_duration = form.contractDuration.data or \
+                               bid['contractDuration']
             break
 
     if not annual_costs_reduction:
         return False
-    if form.yearlyPaymentsPercentage.data:
-        result = calculate_npv(nbu_rate, annual_costs_reduction, None,
-                             contractDuration,
-                             yearlyPaymentsPercentage=form.yearlyPaymentsPercentage.data,
-                             contractDurationDays=form.contractDurationDays.data)
-    else:
-        result = calculate_npv(nbu_rate, annual_costs_reduction,
-                             yearlyPayments, contractDuration,
-                             contractDurationDays=form.contractDurationDays.data)
+
+    result = calculate_npv(
+        nbu_rate,
+        annual_costs_reduction,
+        contract_duration,
+        yearlyPaymentsPercentage=form.yearlyPaymentsPercentage.data,
+        contractDurationDays=form.contractDurationDays.data
+    )
 
     return round(float(result), 2)
 
@@ -89,10 +88,6 @@ class BidsForm(Form):
         [InputRequired(message=u'No bidder id')]
     )
 
-    yearlyPayments = DecimalField(
-        'yearlyPayments',
-        validators=[validate_value]
-    )
     yearlyPaymentsPercentage = DecimalField(
         'yearlyPaymentsPercentage',
         validators=[validate_yearly_payments_percentage]
@@ -116,13 +111,12 @@ class BidsForm(Form):
             # TODO: use default contractDurationDays if not provided
             try:
                 if not self.yearlyPaymentsPercentage.data:
-                    self.yearlyPaymentsPercentage.errors.append(u'Provide either yearlyPaymentsPercentage')
-                if not self.yearlyPayments.data:
-                    self.yearlyPaymentsPercentage.errors.append(u'Provide either yearlyPayments')
+                    self.yearlyPaymentsPercentage.errors\
+                        .append(u'Provide yearlyPaymentsPercentage')
                 if self.contractDurationDays.data and self.contractDuration.data:
                     if (Fraction(self.contractDurationDays.data, DAYS_IN_YEAR) + self.contractDuration.data) > MAX_CONTRACT_DURATION:
                         self.contractDurationDays.errors.append(u'Maximun contract duration is 15 years')
-                if self.yearlyPayments.data == -1 or self.yearlyPaymentsPercentage.data == -1:
+                if self.yearlyPaymentsPercentage.data == -1:
                     return -1
                 amount = _npv(self)
                 stage_id = self.document['current_stage']
@@ -157,13 +151,15 @@ def form_handler():
                 'contractDurationDays': form.data['contractDurationDays'],
                 'time': current_time.isoformat()
             })
-            if form.data['yearlyPayments'] == -1.0 or form.data['yearlyPaymentsPercentage']:
-                app.logger.info("Bidder {} with client_id {} canceled bids in stage {} in {}".format(
-                    form.data['bidder_id'],
-                    session['client_id'],
-                    form.document['current_stage'],
-                    current_time.isoformat()
-                ), extra=prepare_extra_journal_fields(request.headers))
+            if form.data['yearlyPaymentsPercentage']:
+                app.logger.info(
+                    "Bidder {} with client_id {} canceled bids in "
+                    "stage {} in {}".format(form.data['bidder_id'],
+                                            session['client_id'],
+                                            form.document['current_stage'],
+                                            current_time.isoformat()), 
+                    extra=prepare_extra_journal_fields(request.headers)
+                )
             else:
                 app.logger.info("Bidder {} with client_id {} placed bid {} in {}".format(
                     form.data['bidder_id'], session['client_id'],
