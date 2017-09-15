@@ -24,7 +24,7 @@ def prepare_auction_document(self):
          'stages': [],
          'tenderID': self._auction_data['data'].get('tenderID', ''),
          'procurementMethodType': self._auction_data['data'].get('procurementMethodType', ''),
-         'TENDERS_API_VERSION': self.worker_defaults['TENDERS_API_VERSION'],
+         'TENDERS_API_VERSION': self.worker_defaults['resource_api_version'],
          'initial_bids': [],
          'current_stage': -1,
          "NBUdiscountRate": self._auction_data["data"].get("NBUdiscountRate"),
@@ -76,7 +76,7 @@ def post_results_data(self, with_auctions_results=True):
     )
     results = make_request(
         self.tender_url + '/auction/{}'.format(self.lot_id), data=patch_data,
-        user=self.worker_defaults["TENDERS_API_TOKEN"],
+        user=self.worker_defaults["resource_api_token"],
         method='post',
         request_id=self.request_id, session=self.session
     )
