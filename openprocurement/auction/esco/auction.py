@@ -33,7 +33,7 @@ from openprocurement.auction.esco.journal import (
     AUCTION_WORKER_SERVICE_PREPARE_SERVER,
     AUCTION_WORKER_SERVICE_END_FIRST_PAUSE
 )
-from openprocurement.auction.worker.utils import  prepare_results_stage
+from openprocurement.auction.worker.utils import prepare_results_stage
 
 from openprocurement.auction.esco.utils import prepare_initial_bid_stage
 
@@ -44,8 +44,8 @@ from openprocurement.auction.utils import\
 
 LOGGER = logging.getLogger('Auction Worker')
 SCHEDULER = GeventScheduler(job_defaults={"misfire_grace_time": 100},
-                                executors={'default': AuctionsExecutor()},
-                                logger=LOGGER)
+                            executors={'default': AuctionsExecutor()},
+                            logger=LOGGER)
 SCHEDULER.timezone = TIMEZONE
 
 
@@ -70,9 +70,11 @@ class Auction(ESCODBServiceMixin,
         else:
             self.auction_doc_id = tender_id
         self.tender_url = urljoin(
-            worker_defaults["TENDERS_API_URL"],
-            '/api/{0}/tenders/{1}'.format(
-                worker_defaults["TENDERS_API_VERSION"], tender_id
+            worker_defaults["resource_api_url"],
+            '/api/{0}/{2}/{3}'.format(
+                worker_defaults["resource_api_version"],
+                worker_defaults["resource_name"],
+                tender_id
             )
         )
         if auction_data:
