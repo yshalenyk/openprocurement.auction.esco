@@ -3,7 +3,7 @@ Library        Selenium2Library
 Library        Selenium2Screenshots
 Library        DebugLibrary
 Resource       users_keywords.robot
-Library        openprocurement.auction.tests.functional.service_keywords
+Library        openprocurement.auction.esco.tests.functional.service_keywords
 
 *** Variables ***
 ${USERS}
