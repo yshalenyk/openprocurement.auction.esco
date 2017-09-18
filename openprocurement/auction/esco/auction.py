@@ -70,7 +70,7 @@ class Auction(ESCODBServiceMixin,
         else:
             self.auction_doc_id = tender_id
         self.tender_url = urljoin(
-            worker_defaults["resource_api_url"],
+            worker_defaults["resource_api_server"],
             '/api/{0}/{2}/{3}'.format(
                 worker_defaults["resource_api_version"],
                 worker_defaults["resource_name"],

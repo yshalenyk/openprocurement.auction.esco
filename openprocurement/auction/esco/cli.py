@@ -36,8 +36,8 @@ def main():
             worker_defaults['handlers']['journal']['TENDER_ID'] = args.auction_doc_id
             if args.lot:
                 worker_defaults['handlers']['journal']['TENDER_LOT_ID'] = args.lot
-        for key in ('resource_api_version', 'resource_api_server',):
-            worker_defaults['handlers']['journal'][key] = worker_defaults[key]
+        worker_defaults['handlers']['journal']['TENDERS_API_VERSION'] = worker_defaults['resource_api_version']
+        worker_defaults['handlers']['journal']['TENDERS_API_URL'] =  worker_defaults['resource_api_server']
 
         logging.config.dictConfig(worker_defaults)
     else:
