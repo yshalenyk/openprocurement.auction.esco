@@ -42,7 +42,7 @@ from openprocurement.auction.utils import\
     sorting_start_bids_by_amount, delete_mapping
 
 
-LOGGER = logging.getLogger('Auction Worker')
+LOGGER = logging.getLogger('Auction Esco')
 SCHEDULER = GeventScheduler(job_defaults={"misfire_grace_time": 100},
                             executors={'default': AuctionsExecutor()},
                             logger=LOGGER)

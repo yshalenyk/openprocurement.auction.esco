@@ -23,7 +23,7 @@ from openprocurement.auction.worker.mixins import DBServiceMixin,\
     PostAuctionServiceMixin, StagesServiceMixin, BiddersServiceMixin
 
 
-LOGGER = logging.getLogger("Auction Worker")
+LOGGER = logging.getLogger("Auction Esco")
 
 
 class ESCODBServiceMixin(DBServiceMixin):

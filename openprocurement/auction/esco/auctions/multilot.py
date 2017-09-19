@@ -9,7 +9,7 @@ from openprocurement.auction.worker.journal import AUCTION_WORKER_API_APPROVED_D
 FORMATTER = lambda **kw: "{}_{}".format(kw.get('tender_id'), kw.get('lot_id'))
 MULTILINGUAL_FIELDS = ['title', 'description']
 ADDITIONAL_LANGUAGES = ['ru', 'en']
-LOGGER = logging.getLogger('Auction Worker')
+LOGGER = logging.getLogger('Auction Esco')
 
 
 # Indentical methods

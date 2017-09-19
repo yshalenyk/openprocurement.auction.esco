@@ -10,7 +10,7 @@ FORMATTER = lambda **kw: "{}".format(kw.get('tender_id'))
 MULTILINGUAL_FIELDS = ["title", "description"]
 ADDITIONAL_LANGUAGES = ["ru", "en"]
 ROUNDS = 3
-LOGGER = logging.getLogger('Auction Worker')
+LOGGER = logging.getLogger('Auction Esco')
 
 
 # Indentical methods
