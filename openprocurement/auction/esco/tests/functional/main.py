@@ -3,17 +3,14 @@ from gevent import monkey
 monkey.patch_all()
 
 import os
-import datetime
 import json
-import contextlib
-import tempfile
-from dateutil.tz import tzlocal
 from gevent.subprocess import check_output, sleep
-from openprocurement.auction.tests.main import update_auctionPeriod
+from openprocurement.auction.tests.utils import update_auctionPeriod
 
 
 PWD = os.path.dirname(os.path.realpath(__file__))
 CWD = os.getcwd()
+
 
 def run_esco(tender_file_path):
     with open(tender_file_path) as _file:
@@ -24,7 +21,8 @@ def run_esco(tender_file_path):
                 check_output(
                         '{0}/bin/auction_esco planning {1}'
                         ' {0}/etc/auction_worker_esco.yaml'
-                        ' --planning_procerude partial_db --auction_info {2}'.format(CWD, auction_id, auction_file).split())
+                        ' --planning_procerude partial_db --auction_info {2}'
+                        .format(CWD, auction_id, auction_file).split())
         sleep(30)
 
 
