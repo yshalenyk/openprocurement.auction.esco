@@ -29,8 +29,9 @@ def prepare_auction_document(self):
          "initial_bids": [],
          "current_stage": -1,
          "NBUdiscountRate": self._auction_data["data"].get("NBUdiscountRate"),
+         "noticePublicationDate": self._auction_data["data"].get("noticePublicationDate"),
          "results": [],
-         "minimalStep": self._auction_data["data"].get("minimalStep", {}),
+         "minimalStepPercentage": self._auction_data["data"].get("minimalStepPercentage", {}),
          "procuringEntity": self._auction_data["data"].get("procuringEntity", {}),
          "items": self._auction_data["data"].get("items", []),
          "minValue": self._auction_data["data"].get("minValue", {})}

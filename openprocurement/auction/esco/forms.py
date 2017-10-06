@@ -5,10 +5,11 @@ from pytz import timezone
 from wtforms import Form, DecimalField, StringField, IntegerField
 from wtforms.validators import InputRequired, ValidationError, StopValidation, NumberRange
 from wtforms_json import init; init()
+from dateutil import parser
 
 from openprocurement.auction.esco.constants import DAYS_IN_YEAR, MAX_CONTRACT_DURATION
-from openprocurement.auction.esco.utils import calculate_npv
 from openprocurement.auction.utils import prepare_extra_journal_fields
+from esculator import npv
 
 
 def validate_bidder_id_on_bidding(form, field):
@@ -33,30 +34,6 @@ def validate_yearly_payments_percentage(form, field):
         raise ValidationError(message)
 
 
-def _npv(form):
-    nbu_rate = form.auction.auction_document['NBUdiscountRate']
-    annual_costs_reduction = 0
-    for bid in form.document['initial_bids']:
-        if bid['bidder_id'] == form.bidder_id.data:
-            annual_costs_reduction = bid['annualCostsReduction']
-            contract_duration = form.contractDuration.data or \
-                               bid['contractDuration']
-            break
-
-    if not annual_costs_reduction:
-        return False
-
-    result = calculate_npv(
-        nbu_rate,
-        annual_costs_reduction,
-        contract_duration,
-        yearlyPaymentsPercentage=form.yearlyPaymentsPercentage.data,
-        contractDurationDays=form.contractDurationDays.data
-    )
-
-    return round(float(result), 2)
-
-
 def validate_bid_change_on_bidding(form, amount_npv):
     """
     Bid must be higher then previous bidder bid amount minus minimalStep amount
@@ -65,7 +42,7 @@ def validate_bid_change_on_bidding(form, amount_npv):
     if form.auction.features:
         max_bid = form.document['stages'][stage_id]['amount_features']
         _max = Fraction(max_bid) * form.auction.bidders_coeficient[form.data['bidder_id']]
-        _max += Fraction(form.document['minimalStep']['amount'])
+        _max += Fraction(form.document['minimalStepPercentage'])
         if amount_npv < _max:
             errors = form.errors.get('form', [])
             message = u'Amount NPV: Too low value'
@@ -118,7 +95,21 @@ class BidsForm(Form):
                         self.contractDurationDays.errors.append(u'Maximun contract duration is 15 years')
                 if self.yearlyPaymentsPercentage.data == -1:
                     return -1
-                amount = _npv(self)
+
+                nbu_rate = self.auction.auction_document['NBUdiscountRate']
+                annual_costs_reduction = 0
+                for bid in self.document['initial_bids']:
+                    if bid['bidder_id'] == self.bidder_id.data:
+                        annual_costs_reduction = bid['annualCostsReduction']
+                        break
+
+                amount = npv(self.contractDuration.data,    
+                             self.contractDurationDays.data,
+                             self.yearlyPaymentsPercentage.data,
+                             annual_costs_reduction,
+                             parser.parse(self.auction.auction_document['noticePublicationDate']), # XXX TODO TEMP!!!!!
+                             nbu_rate)
+
                 stage_id = self.document['current_stage']
                 if self.document['stages'][stage_id]['type'] == 'bids':
                     validate_bid_change_on_bidding(self, amount)
