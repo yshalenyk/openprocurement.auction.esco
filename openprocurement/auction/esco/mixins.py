@@ -83,7 +83,7 @@ class ESCODBServiceMixin(DBServiceMixin):
             self.set_auction_and_participation_urls()
 
 
-class BiddersServiceMixin(BiddersServiceMixin):
+class ESCOBiddersServiceMixin(BiddersServiceMixin):
     """Mixin class to work with bids data"""
 
     def set_auction_and_participation_urls(self):

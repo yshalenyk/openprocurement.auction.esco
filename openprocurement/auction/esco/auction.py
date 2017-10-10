@@ -20,7 +20,7 @@ from openprocurement.auction.worker.mixins import\
     DateTimeServiceMixin, TIMEZONE
 
 from openprocurement.auction.esco.mixins import ESCODBServiceMixin,\
-    EscoStagesMixin, EscoPostAuctionMixin, BiddersServiceMixin, ROUNDS
+    EscoStagesMixin, EscoPostAuctionMixin, ESCOBiddersServiceMixin, ROUNDS
 from openprocurement.auction.esco.forms import BidsForm, form_handler
 from openprocurement.auction.esco.journal import (
     AUCTION_WORKER_SERVICE_AUCTION_RESCHEDULE,
@@ -52,7 +52,7 @@ SCHEDULER.timezone = TIMEZONE
 class Auction(ESCODBServiceMixin,
               RequestIDServiceMixin,
               AuditServiceMixin,
-              BiddersServiceMixin,
+              ESCOBiddersServiceMixin,
               DateTimeServiceMixin,
               EscoStagesMixin,
               EscoPostAuctionMixin):
