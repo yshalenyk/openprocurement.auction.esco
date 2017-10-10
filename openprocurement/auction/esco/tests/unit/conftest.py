@@ -70,7 +70,7 @@ def features_auction():
 @pytest.yield_fixture(
     scope="function",
     params=[
-        {'tender_data': tender_data, 'lot_id': False},
+        {'tender_data': tender_data, 'lot_id': None},
         {'tender_data': lot_tender_data, 'lot_id': lot_tender_data['data']['lots'][0]['id']}
     ],
     ids=['simple', 'multilot']

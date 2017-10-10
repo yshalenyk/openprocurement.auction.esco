@@ -104,7 +104,7 @@ class EscoPostAuctionMixin(PostAuctionServiceMixin):
         results = self._type.post_results_data(self)
 
         if results:
-            if hasattr(self, 'lot_id'):
+            if self.lot_id:
                 bids_information = None
             else:
                 bids_information = self._type.announce_results_data(self, results)
