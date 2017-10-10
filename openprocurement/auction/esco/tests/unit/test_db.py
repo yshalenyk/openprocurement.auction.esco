@@ -1,11 +1,7 @@
 # -*- coding: utf-8 -*-
 import pytest
 
-AUCTIONS = {
-    'simple': 'openprocurement.auction.esco.auctions.simple',
-    'multilot': 'openprocurement.auction.esco.auctions.multilot',
-}
-
+from constants import AUCTIONS
 
 def test_get_auction_info(universal_auction, mocker):
     mock_get_auction_info = mocker.MagicMock()
