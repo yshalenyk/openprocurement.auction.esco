@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from fractions import Fraction
-
-from openprocurement.auction.esco.constants import NPV_CALCULATION_DURATION, DAYS_IN_YEAR
 
 def prepare_initial_bid_stage(bidder_name="", bidder_id="", time="",
-                              amount_features="", coeficient="", amount="", annualCostsReduction=[]):
+                              amount_features="", coeficient="", amount="", annualCostsReduction=None):
+    if annualCostsReduction is None:
+        annualCostsReduction = []
     stage = dict(bidder_id=bidder_id, time=str(time))
     stage["label"] = dict(
         en="Bidder #{}".format(bidder_name),
