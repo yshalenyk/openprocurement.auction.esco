@@ -109,7 +109,6 @@ class BidsForm(Form):
                              annual_costs_reduction,
                              parser.parse(self.auction.auction_document['noticePublicationDate']), # XXX TODO TEMP!!!!!
                              nbu_rate)
-
                 stage_id = self.document['current_stage']
                 if self.document['stages'][stage_id]['type'] == 'bids':
                     validate_bid_change_on_bidding(self, amount)
@@ -132,7 +131,7 @@ def form_handler():
         form.auction = auction
         form.document = auction.db.get(auction.auction_doc_id)
         current_time = datetime.now(timezone('Europe/Kiev'))
-        total_amount = form.validate()
+        total_amount = float(form.validate())  # XXX TODO fraction to JSON?
         if total_amount:
             # write data
             auction.add_bid(form.document['current_stage'], {

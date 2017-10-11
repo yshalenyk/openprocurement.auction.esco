@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-
 def prepare_initial_bid_stage(bidder_name="", bidder_id="", time="",
                               amount_features="", coeficient="", amount="", annualCostsReduction=None):
     if annualCostsReduction is None:
@@ -18,3 +17,4 @@ def prepare_initial_bid_stage(bidder_name="", bidder_id="", time="",
     if coeficient:
         stage['coeficient'] = str(coeficient)
     return stage
+

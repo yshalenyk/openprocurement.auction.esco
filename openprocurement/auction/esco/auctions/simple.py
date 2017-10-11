@@ -65,7 +65,7 @@ def post_results_data(self, with_auctions_results=True):
         for index, bid_info in enumerate(self._auction_data["data"]["bids"]):
             if bid_info.get('status', 'active') == 'active':
                 auction_bid_info = get_latest_bid_for_bidder(self.auction_document["results"], bid_info["id"])
-                self._auction_data["data"]["bids"][index]["value"]["amount"] = auction_bid_info["amount"]
+                self._auction_data["data"]["bids"][index]["value"]["amountPerformance"] = auction_bid_info["amountPerformance"]
                 self._auction_data["data"]["bids"][index]["date"] = auction_bid_info["time"]
 
     data = {'data': {'bids': self._auction_data["data"]['bids']}}

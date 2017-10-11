@@ -142,7 +142,7 @@ class EscoStagesMixin(StagesServiceMixin):
         self.auction_document["initial_bids"] = []
         bids_info = sorting_start_bids_by_amount(bids, features=self.features)
         for index, bid in enumerate(bids_info):
-            amount = bid["value"]["amount"]
+            amount = bid["value"]["amountPerformance"]
             annualCostsReduction = bid["value"]["annualCostsReduction"]
             if self.features:
                 amount_features = cooking(
