@@ -137,8 +137,9 @@ def form_handler():
             auction.add_bid(form.document['current_stage'], {
                 'bidder_id': form.data['bidder_id'],
                 'amount': total_amount,
-                'contractDuration': form.data['contractDuration'],
+                'contractDurationYears': form.data['contractDuration'],
                 'contractDurationDays': form.data['contractDurationDays'],
+                'yearlyPaymentsPercentage': float(form.data['yearlyPaymentsPercentage']),
                 'time': current_time.isoformat()
             })
             if form.data['yearlyPaymentsPercentage']:

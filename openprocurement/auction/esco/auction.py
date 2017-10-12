@@ -16,11 +16,10 @@ from barbecue import cooking
 from openprocurement.auction.executor import AuctionsExecutor
 from openprocurement.auction.worker.server import run_server
 from openprocurement.auction.worker.mixins import\
-    RequestIDServiceMixin, AuditServiceMixin,\
-    DateTimeServiceMixin, TIMEZONE
+    RequestIDServiceMixin, DateTimeServiceMixin, TIMEZONE
 
 from openprocurement.auction.esco.mixins import ESCODBServiceMixin,\
-    EscoStagesMixin, EscoPostAuctionMixin, BiddersServiceMixin, ROUNDS
+    EscoStagesMixin, EscoPostAuctionMixin, BiddersServiceMixin, EscoAuditServiceMixin, ROUNDS
 from openprocurement.auction.esco.forms import BidsForm, form_handler
 from openprocurement.auction.esco.journal import (
     AUCTION_WORKER_SERVICE_AUCTION_RESCHEDULE,
@@ -33,9 +32,7 @@ from openprocurement.auction.esco.journal import (
     AUCTION_WORKER_SERVICE_PREPARE_SERVER,
     AUCTION_WORKER_SERVICE_END_FIRST_PAUSE
 )
-from openprocurement.auction.worker.utils import prepare_results_stage
-
-from openprocurement.auction.esco.utils import prepare_initial_bid_stage
+from openprocurement.auction.esco.utils import prepare_initial_bid_stage, prepare_results_stage
 
 from openprocurement.auction.utils import\
     get_latest_bid_for_bidder, sorting_by_amount,\
@@ -51,7 +48,7 @@ SCHEDULER.timezone = TIMEZONE
 
 class Auction(ESCODBServiceMixin,
               RequestIDServiceMixin,
-              AuditServiceMixin,
+              EscoAuditServiceMixin,
               BiddersServiceMixin,
               DateTimeServiceMixin,
               EscoStagesMixin,
@@ -194,7 +191,12 @@ class Auction(ESCODBServiceMixin,
             audit_info = {
                 "bidder": bid["id"],
                 "date": bid["date"],
-                "amount": amount
+                "amount": amount,
+                "contractDuration": {
+                    "years": bid["value"]["contractDuration"]["years"],
+                    "days": bid["value"]["contractDuration"]["days"],
+                },
+                "yearlyPaymentsPercentage": bid["value"]["yearlyPaymentsPercentage"]
             }
             if self.features:
                 amount_features = cooking(
@@ -219,6 +221,9 @@ class Auction(ESCODBServiceMixin,
                     amount=amount,
                     coeficient=coeficient,
                     amount_features=amount_features,
+                    contractDurationDays=bid["value"]["contractDuration"]["days"],
+                    contractDurationYears=bid["value"]["contractDuration"]["years"],
+                    yearlyPaymentsPercentage=bid["value"]["yearlyPaymentsPercentage"],
                     annualCostsReduction=bid["value"]["annualCostsReduction"]
                 )
             )

@@ -7,8 +7,7 @@ from barbecue import cooking
 from openprocurement.auction.utils import\
     get_latest_bid_for_bidder, sorting_by_amount,\
     sorting_start_bids_by_amount
-from openprocurement.auction.worker.utils import\
-    prepare_service_stage, prepare_results_stage, prepare_bids_stage
+from openprocurement.auction.worker.utils import prepare_service_stage
 from openprocurement.auction.worker.constants import ROUNDS, BIDS_SECONDS,\
     FIRST_PAUSE_SECONDS, PAUSE_SECONDS
 from openprocurement.auction.worker.journal import (
@@ -17,10 +16,12 @@ from openprocurement.auction.worker.journal import (
     AUCTION_WORKER_SERVICE_START_STAGE,
     AUCTION_WORKER_SERVICE_START_NEXT_STAGE,
 )
+from openprocurement.auction.esco.constants import BIDS_KEYS_FOR_COPY
 from openprocurement.auction.esco.auctions import simple, multilot
-from openprocurement.auction.esco.utils import prepare_initial_bid_stage
+from openprocurement.auction.esco.utils import prepare_initial_bid_stage, prepare_bids_stage, prepare_results_stage
 from openprocurement.auction.worker.mixins import DBServiceMixin,\
-    PostAuctionServiceMixin, StagesServiceMixin, BiddersServiceMixin
+    PostAuctionServiceMixin, StagesServiceMixin, BiddersServiceMixin, \
+    AuditServiceMixin
 
 
 LOGGER = logging.getLogger("Auction Esco")
@@ -92,6 +93,48 @@ class BiddersServiceMixin(BiddersServiceMixin):
         else:
             simple.prepare_auction_and_participation_urls(self)
 
+    def filter_bids_keys(self, bids):
+        filtered_bids_data = []
+        for bid_info in bids:
+            bid_info_result = {key: bid_info[key] for key in BIDS_KEYS_FOR_COPY}
+            if self.features:
+                bid_info_result['amount_features'] = bid_info['amount_features']
+                bid_info_result['coeficient'] = bid_info['coeficient']
+            bid_info_result["bidder_name"] = self.mapping[bid_info_result['bidder_id']]
+            filtered_bids_data.append(bid_info_result)
+        return filtered_bids_data
+
+    def approve_bids_information(self):
+        if self.current_stage in self._bids_data:
+            LOGGER.info(
+                "Current stage bids {}".format(self._bids_data[self.current_stage]),
+                extra={"JOURNAL_REQUEST_ID": self.request_id}
+            )
+
+            bid_info = get_latest_bid_for_bidder(
+                self._bids_data[self.current_stage],
+                self.auction_document["stages"][self.current_stage]['bidder_id']
+            )
+            if bid_info['amount'] == -1.0:
+                LOGGER.info(
+                    "Latest bid is bid cancellation: {}".format(bid_info),
+                    extra={"JOURNAL_REQUEST_ID": self.request_id,
+                           "MESSAGE_ID": AUCTION_WORKER_BIDS_LATEST_BID_CANCELLATION}
+                )
+                return False
+            bid_info = {key: bid_info[key] for key in BIDS_KEYS_FOR_COPY}
+            bid_info["bidder_name"] = self.mapping[bid_info['bidder_id']]
+            if self.features:
+                bid_info['amount_features'] = str(Fraction(bid_info['amount']) / self.bidders_coeficient[bid_info['bidder_id']])
+            self.auction_document["stages"][self.current_stage] = prepare_bids_stage(
+                self.auction_document["stages"][self.current_stage],
+                bid_info
+            )
+            self.auction_document["stages"][self.current_stage]["changed"] = True
+
+            return True
+        else:
+            return False
 
 class EscoPostAuctionMixin(PostAuctionServiceMixin):
 
@@ -161,7 +204,10 @@ class EscoStagesMixin(StagesServiceMixin):
                 amount=amount,
                 coeficient=coeficient,
                 amount_features=amount_features,
-                annualCostsReduction=annualCostsReduction
+                annualCostsReduction=annualCostsReduction,
+                yearlyPaymentsPercentage=bid["value"]["yearlyPaymentsPercentage"],
+                contractDurationDays=bid["value"]["contractDurationDays"],
+                contractDurationYears=bid["value"]["contractDurationYears"]
             )
             self.auction_document["initial_bids"].append(
                 initial_bid_stage
@@ -182,6 +228,9 @@ class EscoStagesMixin(StagesServiceMixin):
                     'bidder_id': '',
                     'bidder_name': '',
                     'amount': '0',
+                    "contractDurationDays": "0",
+                    "contractDurationYears": "0",
+                    "yearlyPaymentsPercentage": "0",
                     'time': '',
                 })
                 self.auction_document['stages'].append(bid_stage)
@@ -205,7 +254,6 @@ class EscoStagesMixin(StagesServiceMixin):
             minimal_bids.append(get_latest_bid_for_bidder(
                 all_bids, str(bid_info['id'])
             ))
-
         minimal_bids = self.filter_bids_keys(sorting_by_amount(minimal_bids))
         self.update_future_bidding_orders(minimal_bids)
 
@@ -290,7 +338,10 @@ class EscoStagesMixin(StagesServiceMixin):
                     bidder_id=bid_info["id"],
                     bidder_name=self.mapping[bid_info["id"]],
                     amount="0",
-                    annualCostsReduction="0"
+                    yearlyPaymentsPercentage="0",
+                    contractDurationYears="0",
+                    contractDurationDays="0",
+                    annualCostsReduction=[]
                 )
             )
         self.auction_document['stages'] = []
@@ -314,6 +365,9 @@ class EscoStagesMixin(StagesServiceMixin):
                     'bidder_id': '',
                     'bidder_name': '',
                     'amount': '0',
+                    'contractDurationDays': '0',
+                    'contractDurationYears': '0',
+                    'yearlyPaymentsPercentage': '0',
                     'time': '',
                 })
 
@@ -335,19 +389,25 @@ class EscoStagesMixin(StagesServiceMixin):
 
         self.auction_document['endDate'] = next_stage_timedelta.isoformat()
 
-    def next_stage(self, switch_to_round=None):
-        self.generate_request_id()
-        self.bids_actions.acquire()
-        self.get_auction_document()
 
-        if isinstance(switch_to_round, int):
-            self.auction_document["current_stage"] = switch_to_round
-        else:
-            self.auction_document["current_stage"] += 1
-        self.save_auction_document()
-        self.bids_actions.release()
-        LOGGER.info('---------------- Start stage {0} ----------------'.format(
-            self.auction_document["current_stage"]),
-            extra={"JOURNAL_REQUEST_ID": self.request_id,
-                   "MESSAGE_ID": AUCTION_WORKER_SERVICE_START_NEXT_STAGE}
-        )
+class EscoAuditServiceMixin(AuditServiceMixin):
+
+    def approve_audit_info_on_announcement(self, approved={}):
+        self.audit['timeline']['results'] = {
+            "time": datetime.now(tzlocal()).isoformat(),
+            "bids": []
+        }
+        for bid in self.auction_document['results']:
+            bid_result_audit = {
+                'bidder': bid['bidder_id'],
+                'amount': bid['amount'],
+                "contractDuration": {
+                    "years": bid["contractDurationYears"],
+                    "days": bid["contractDurationDays"]
+                },
+                "yearlyPaymentsPercentage": bid["yearlyPaymentsPercentage"],
+                'time': bid['time']
+            }
+            if approved:
+                bid_result_audit["identification"] = approved[bid['bidder_id']]
+            self.audit['timeline']['results']['bids'].append(bid_result_audit)
