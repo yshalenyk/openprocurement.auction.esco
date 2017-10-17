@@ -7,6 +7,7 @@ from wtforms.validators import InputRequired, ValidationError, StopValidation, N
 from wtforms_json import init; init()
 from dateutil import parser
 
+from openprocurement.auction.esco.utils import to_decimal
 from openprocurement.auction.esco.constants import DAYS_IN_YEAR, MAX_CONTRACT_DURATION
 from openprocurement.auction.utils import prepare_extra_journal_fields
 from esculator import npv
@@ -131,7 +132,7 @@ def form_handler():
         form.auction = auction
         form.document = auction.db.get(auction.auction_doc_id)
         current_time = datetime.now(timezone('Europe/Kiev'))
-        total_amount = float(form.validate())  # XXX TODO fraction to JSON?
+        total_amount = to_decimal(form.validate())
         if total_amount:
             # write data
             auction.add_bid(form.document['current_stage'], {

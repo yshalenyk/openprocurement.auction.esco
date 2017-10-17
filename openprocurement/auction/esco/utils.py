@@ -1,5 +1,10 @@
 # -*- coding: utf-8 -*-
+import decimal
+import simplejson
+import couchdb.json
+from couchdb import util
 from barbecue import chef
+from decimal import Decimal
 
 def prepare_initial_bid_stage(bidder_name="",
                               bidder_id="",
@@ -98,3 +103,18 @@ def sorting_start_bids_by_amount(bids, features=None, reverse=True):
 
     # return sorted(bids, key=get_amount, reverse=reverse)
     return chef(bids, features=features, awarding_criteria_key="amountPerformance")
+
+
+def to_decimal(fraction):
+    return Decimal(fraction.numerator) / Decimal(fraction.denominator)
+
+def couchdb_json_decode():
+    my_encode = lambda obj, dumps=simplejson.dumps: dumps(obj, allow_nan=False, ensure_ascii=False)
+
+    def my_decode(string_):
+
+        if isinstance(string_, util.btype):
+            string_ = string_.decode("utf-8")
+        return simplejson.loads(string_, parse_float=decimal.Decimal)
+
+    couchdb.json.use(decode=my_decode, encode=my_encode)
