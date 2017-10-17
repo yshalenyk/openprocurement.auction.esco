@@ -5,8 +5,7 @@ from dateutil.tz import tzlocal
 from barbecue import cooking
 
 from openprocurement.auction.utils import\
-    get_latest_bid_for_bidder, sorting_by_amount,\
-    sorting_start_bids_by_amount
+    get_latest_bid_for_bidder, sorting_by_amount
 from openprocurement.auction.worker.utils import prepare_service_stage
 from openprocurement.auction.worker.constants import ROUNDS, BIDS_SECONDS,\
     FIRST_PAUSE_SECONDS, PAUSE_SECONDS
@@ -18,7 +17,9 @@ from openprocurement.auction.worker.journal import (
 )
 from openprocurement.auction.esco.constants import BIDS_KEYS_FOR_COPY
 from openprocurement.auction.esco.auctions import simple, multilot
-from openprocurement.auction.esco.utils import prepare_initial_bid_stage, prepare_bids_stage, prepare_results_stage
+from openprocurement.auction.esco.utils import (
+    prepare_initial_bid_stage, prepare_bids_stage, prepare_results_stage, sorting_start_bids_by_amount
+)
 from openprocurement.auction.worker.mixins import DBServiceMixin,\
     PostAuctionServiceMixin, StagesServiceMixin, BiddersServiceMixin, \
     AuditServiceMixin

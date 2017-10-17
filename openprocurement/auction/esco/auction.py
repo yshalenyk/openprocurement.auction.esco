@@ -32,11 +32,14 @@ from openprocurement.auction.esco.journal import (
     AUCTION_WORKER_SERVICE_PREPARE_SERVER,
     AUCTION_WORKER_SERVICE_END_FIRST_PAUSE
 )
-from openprocurement.auction.esco.utils import prepare_initial_bid_stage, prepare_results_stage
+from openprocurement.auction.esco.utils import (
+    prepare_initial_bid_stage,
+    prepare_results_stage,
+    sorting_start_bids_by_amount
+)
 
 from openprocurement.auction.utils import\
-    get_latest_bid_for_bidder, sorting_by_amount,\
-    sorting_start_bids_by_amount, delete_mapping
+    get_latest_bid_for_bidder, sorting_by_amount, delete_mapping
 
 
 LOGGER = logging.getLogger('Auction Esco')

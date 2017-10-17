@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from barbecue import chef
 
 def prepare_initial_bid_stage(bidder_name="",
                               bidder_id="",
@@ -82,3 +83,18 @@ def prepare_bids_stage(exist_stage_params, params={}):
             "uk": ""
         }
     return stage
+
+def sorting_start_bids_by_amount(bids, features=None, reverse=True):
+    """
+    >>> from json import load
+    >>> import os
+    >>> data = load(open(os.path.join(os.path.dirname(__file__),
+    ...                               'tests/functional/data/tender_simple.json')))
+    >>> sorted_data = sorting_start_bids_by_amount(data['data']['bids'])
+
+    """
+    def get_amount(item):
+        return item['value']['amountPerformance']
+
+    # return sorted(bids, key=get_amount, reverse=reverse)
+    return chef(bids, features=features, awarding_criteria_key="amountPerformance")
