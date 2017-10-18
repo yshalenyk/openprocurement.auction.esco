@@ -132,12 +132,12 @@ def form_handler():
         form.auction = auction
         form.document = auction.db.get(auction.auction_doc_id)
         current_time = datetime.now(timezone('Europe/Kiev'))
-        total_amount = str(form.validate())
+        total_amount = form.validate()
         if total_amount:
             # write data
             auction.add_bid(form.document['current_stage'], {
                 'bidder_id': form.data['bidder_id'],
-                'amount': total_amount,
+                'amount': str(total_amount),
                 'contractDurationYears': form.data['contractDuration'],
                 'contractDurationDays': form.data['contractDurationDays'],
                 'yearlyPaymentsPercentage': float(form.data['yearlyPaymentsPercentage']),
