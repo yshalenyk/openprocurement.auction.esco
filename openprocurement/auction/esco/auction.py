@@ -35,8 +35,7 @@ from openprocurement.auction.esco.journal import (
 from openprocurement.auction.esco.utils import (
     prepare_initial_bid_stage,
     prepare_results_stage,
-    sorting_start_bids_by_amount,
-    couchdb_json_decode
+    sorting_start_bids_by_amount
 )
 
 from openprocurement.auction.utils import\
@@ -102,7 +101,6 @@ class Auction(ESCODBServiceMixin,
         self.features = None
         self.mapping = {}
         self.rounds_stages = []
-        couchdb_json_decode()
 
     def schedule_auction(self):
         self.generate_request_id()

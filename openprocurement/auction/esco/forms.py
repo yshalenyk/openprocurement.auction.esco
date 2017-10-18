@@ -52,7 +52,7 @@ def validate_bid_change_on_bidding(form, amount_npv):
             raise ValidationError(message)
     else:
         max_bid = form.document['stages'][stage_id]['amount']
-        if amount_npv < (max_bid + (max_bid * form.document['minimalStepPercentage'])):
+        if amount_npv < (Fraction(max_bid) + (Fraction(max_bid) * form.document['minimalStepPercentage'])):
             errors = form.errors.get('form', [])
             message = u'Amount NPV: Too low value'
             errors.append(message)
@@ -132,7 +132,7 @@ def form_handler():
         form.auction = auction
         form.document = auction.db.get(auction.auction_doc_id)
         current_time = datetime.now(timezone('Europe/Kiev'))
-        total_amount = to_decimal(form.validate())
+        total_amount = str(form.validate())
         if total_amount:
             # write data
             auction.add_bid(form.document['current_stage'], {
