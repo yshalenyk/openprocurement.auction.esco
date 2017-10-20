@@ -37,7 +37,7 @@ def main():
             if args.lot:
                 worker_defaults['handlers']['journal']['TENDER_LOT_ID'] = args.lot
         worker_defaults['handlers']['journal']['TENDERS_API_VERSION'] = worker_defaults['resource_api_version']
-        worker_defaults['handlers']['journal']['TENDERS_API_URL'] =  worker_defaults['resource_api_server']
+        worker_defaults['handlers']['journal']['TENDERS_API_URL'] = worker_defaults['resource_api_server']
 
         logging.config.dictConfig(worker_defaults)
     else:
