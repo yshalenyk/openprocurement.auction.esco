@@ -12,6 +12,7 @@ from StringIO import StringIO
 from openprocurement.auction.esco.auction import Auction, SCHEDULER
 from openprocurement.auction.esco.forms import BidsForm
 from openprocurement.auction.esco.mixins import LOGGER
+from openprocurement.auction.worker.mixins import LOGGER as WORKER_LOGGER
 from openprocurement.auction.esco.tests.data.data import (
     tender_data, lot_tender_data, features_tender_data
 )

@@ -255,6 +255,7 @@ class EscoStagesMixin(StagesServiceMixin):
             minimal_bids.append(get_latest_bid_for_bidder(
                 all_bids, str(bid_info['id'])
             ))
+        # import pdb; pdb.set_trace()
         minimal_bids = self.filter_bids_keys(sorting_by_amount(minimal_bids))
         self.update_future_bidding_orders(minimal_bids)
 

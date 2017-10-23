@@ -16,19 +16,26 @@ def test_prepare_auction_stages_fast_forward_no_features(auction, mocker):
     auction.bidders_data = [
         {'date': u'2017-09-19T08:22:21.726234+00:00', 'id': u'd3ba84c66c9e4f34bfb33cc3c686f137', 'value': {
             u'yearlyPaymentsPercentage': 0.85, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
-            u'amount': 9752.643835616438, u'contractDuration': {u'days': 200, u'years': 12},
+            u'amount': 9752.643835616438,
+            u'contractDurationDays': 200,
+            u'contractDurationYears': 12,
             u'amountPerformance': 850.1281928765416,
             u'annualCostsReduction': [400.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0,
                                       900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0]}},
         {'date': u'2017-09-19T08:22:24.038426+00:00', 'id': u'5675acc9232942e8940a034994ad883e', 'value': {
             u'yearlyPaymentsPercentage': 0.86, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
-            u'amount': 9023.638356164383, u'contractDuration': {u'days': 40, u'years': 13},
+            u'amount': 9023.638356164383,
+            u'contractDurationDays': 40,
+            u'contractDurationYears': 13,
             u'amountPerformance': 672.4650719957199,
             u'annualCostsReduction': [200.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0,
                                       800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0]}}]
 
     mock_prepare_initial_bid_stage = mocker.MagicMock(side_effect=[
         {'amount': 9023.638356164383,
+         'yearlyPaymentsPercentage': 0.85,
+         'contractDurationDays': 200,
+         'contractDurationYears': 12,
          'annualCostsReduction': [200.0,
                                   800.0,
                                   800.0,
@@ -56,6 +63,9 @@ def test_prepare_auction_stages_fast_forward_no_features(auction, mocker):
                    'uk': '\xd0\xa3\xd1\x87\xd0\xb0\xd1\x81\xd0\xbd\xd0\xb8\xd0\xba \xe2\x84\x962'},
          'time': '2017-09-19T08:22:24.038426+00:00'},
         {'amount': 9752.643835616438,
+         'yearlyPaymentsPercentage': 0.86,
+         'contractDurationDays': 40,
+         'contractDurationYears': 13,
          'annualCostsReduction': [400.0,
                                   900.0,
                                   900.0,
@@ -91,7 +101,7 @@ def test_prepare_auction_stages_fast_forward_no_features(auction, mocker):
     mocker.spy(mixins, 'prepare_service_stage')
     mocker.spy(mixins, 'prepare_bids_stage')
     mocker.spy(auction, 'update_future_bidding_orders')
-
+    # import pdb; pdb.set_trace()
     auction.prepare_auction_stages_fast_forward()
 
     assert auction.auction_document['auction_type'] == 'default'
@@ -103,10 +113,16 @@ def test_prepare_auction_stages_fast_forward_no_features(auction, mocker):
     assert mixins.prepare_bids_stage.call_count == 6
     auction.update_future_bidding_orders.assert_called_once_with(
         [{'amount': 9752.643835616438,
+          'yearlyPaymentsPercentage': 0.86,
+          'contractDurationDays': 40,
+          'contractDurationYears': 13,
           'bidder_id': u'd3ba84c66c9e4f34bfb33cc3c686f137',
           'bidder_name': '1',
           'time': '2017-09-19T08:22:21.726234+00:00'},
          {'amount': 9023.638356164383,
+          'yearlyPaymentsPercentage': 0.85,
+          'contractDurationDays': 200,
+          'contractDurationYears': 12,
           'bidder_id': u'5675acc9232942e8940a034994ad883e',
           'bidder_name': '2',
           'time': '2017-09-19T08:22:24.038426+00:00'}]
@@ -125,13 +141,17 @@ def test_prepare_auction_stages_fast_forward_features(features_auction, db, mock
     features_auction.bidders_data = [
         {'date': u'2017-09-19T08:22:21.726234+00:00', 'id': u'd3ba84c66c9e4f34bfb33cc3c686f137', 'value': {
             u'yearlyPaymentsPercentage': 0.85, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
-            u'amount': 9752.643835616438, u'contractDuration': {u'days': 200, u'years': 12},
+            u'amount': 9752.643835616438,
+            u'contractDurationDays': 200,
+            u'contractDurationYears': 12,
             u'amountPerformance': 850.1281928765416,
             u'annualCostsReduction': [400.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0,
                                       900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0]}},
         {'date': u'2017-09-19T08:22:24.038426+00:00', 'id': u'5675acc9232942e8940a034994ad883e', 'value': {
             u'yearlyPaymentsPercentage': 0.86, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
-            u'amount': 9023.638356164383, u'contractDuration': {u'days': 40, u'years': 13},
+            u'amount': 9023.638356164383,
+            u'contractDurationDays': 40,
+            u'contractDurationYears': 13,
             u'amountPerformance': 672.4650719957199,
             u'annualCostsReduction': [200.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0,
                                       800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0]}}]
@@ -226,124 +246,6 @@ def test_prepare_auction_stages_fast_forward_features(features_auction, db, mock
     assert mock_cooking.call_count == 2
 
 
-def test_next_stage(auction, mocker, logger):
-    auction.auction_document = {'current_stage': 1}
-    mocker.spy(auction, 'generate_request_id')
-    mock_bids_actions = mocker.patch.object(auction, 'bids_actions', autospec=True)
-
-    mock_get_auction_document = mocker.patch.object(auction, 'get_auction_document', autospec=True)
-    mock_save_auction_document = mocker.patch.object(auction, 'save_auction_document', autospec=True)
-
-    auction.next_stage()
-    log_strings = logger.log_capture_string.getvalue().split('\n')
-
-    assert auction.generate_request_id.call_count == 1
-    assert mock_bids_actions.acquire.call_count == 1
-    assert mock_get_auction_document.call_count == 1
-    assert mock_save_auction_document.call_count == 1
-    assert mock_bids_actions.release.call_count == 1
-    assert log_strings[-2] == '---------------- Start stage 2 ----------------'
-
-    auction.next_stage(3)
-    log_strings = logger.log_capture_string.getvalue().split('\n')
-
-    assert auction.generate_request_id.call_count == 2
-    assert mock_bids_actions.acquire.call_count == 2
-    assert mock_get_auction_document.call_count == 2
-    assert mock_save_auction_document.call_count == 2
-    assert mock_bids_actions.release.call_count == 2
-    assert log_strings[-2] == '---------------- Start stage 3 ----------------'
-
-
-def test_prepare_auction_stages(auction, mocker):
-    auction.startDate = datetime(2017, 10, 10, 0, 0)
-    auction.auction_document = {"current_stage": -1, 'initial_bids': []}
-    auction.bidders_count = 2
-    auction.mapping = {u'5675acc9232942e8940a034994ad883e': '2', u'd3ba84c66c9e4f34bfb33cc3c686f137': '1'}
-    auction.bidders_data = [
-        {'date': u'2017-09-19T08:22:21.726234+00:00', 'id': u'd3ba84c66c9e4f34bfb33cc3c686f137', 'value': {
-            u'yearlyPaymentsPercentage': 0.85, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
-            u'amount': 9752.643835616438, u'contractDuration': {u'days': 200, u'years': 12},
-            u'amountPerformance': 850.1281928765416,
-            u'annualCostsReduction': [400.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0,
-                                      900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0]}},
-        {'date': u'2017-09-19T08:22:24.038426+00:00', 'id': u'5675acc9232942e8940a034994ad883e', 'value': {
-            u'yearlyPaymentsPercentage': 0.86, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
-            u'amount': 9023.638356164383, u'contractDuration': {u'days': 40, u'years': 13},
-            u'amountPerformance': 672.4650719957199,
-            u'annualCostsReduction': [200.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0,
-                                      800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0]}}]
-
-    mock_prepare_initial_bid_stage = mocker.MagicMock(side_effect=[
-        {'amount': '0',
-         'annualCostsReduction': '0',
-         'bidder_id': u'd3ba84c66c9e4f34bfb33cc3c686f137',
-         'label': {'en': 'Bidder #1',
-                   'ru': '\xd0\xa3\xd1\x87\xd0\xb0\xd1\x81\xd1\x82\xd0\xbd\xd0\xb8\xd0\xba \xe2\x84\x961',
-                   'uk': '\xd0\xa3\xd1\x87\xd0\xb0\xd1\x81\xd0\xbd\xd0\xb8\xd0\xba \xe2\x84\x961'},
-         'time': ''},
-        {'amount': '0',
-         'annualCostsReduction': '0',
-         'bidder_id': u'5675acc9232942e8940a034994ad883e',
-         'label': {'en': 'Bidder #2',
-                   'ru': '\xd0\xa3\xd1\x87\xd0\xb0\xd1\x81\xd1\x82\xd0\xbd\xd0\xb8\xd0\xba \xe2\x84\x962',
-                   'uk': '\xd0\xa3\xd1\x87\xd0\xb0\xd1\x81\xd0\xbd\xd0\xb8\xd0\xba \xe2\x84\x962'},
-         'time': ''}])
-    mocker.patch('openprocurement.auction.esco.mixins.prepare_initial_bid_stage', mock_prepare_initial_bid_stage)
-    mocker.spy(mixins, 'prepare_service_stage')
-    mocker.spy(mixins, 'prepare_bids_stage')
-
-    auction.prepare_auction_stages()
-
-    assert auction.auction_document['auction_type'] == 'default'
-    assert mock_prepare_initial_bid_stage.call_count == len(tender_data['data']['bids'])
-    assert len(auction.auction_document['initial_bids']) == len(tender_data['data']['bids'])
-    # 3 rounds with stage for each bid and pause stage. And 2 stages at the end.
-    assert len(auction.auction_document['stages']) == (len(tender_data['data']['bids']) + 1) * 3 + 2
-    assert mixins.prepare_service_stage.call_count == 5
-    assert mixins.prepare_bids_stage.call_count == 6
-
-
-def test_update_future_bidding_orders(auction, mocker):
-    auction.auction_document = {"current_stage": -1, 'initial_bids': [], 'stages': ['','','','','','','','','','','']}
-    auction.bidders_count = 2
-    auction.mapping = {u'5675acc9232942e8940a034994ad883e': '2', u'd3ba84c66c9e4f34bfb33cc3c686f137': '1'}
-    auction.bidders_data = [
-        {'date': u'2017-09-19T08:22:21.726234+00:00', 'id': u'd3ba84c66c9e4f34bfb33cc3c686f137', 'value': {
-            u'yearlyPaymentsPercentage': 0.85, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
-            u'amount': 9752.643835616438, u'contractDuration': {u'days': 200, u'years': 12},
-            u'amountPerformance': 850.1281928765416,
-            u'annualCostsReduction': [400.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0,
-                                      900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0]}},
-        {'date': u'2017-09-19T08:22:24.038426+00:00', 'id': u'5675acc9232942e8940a034994ad883e', 'value': {
-            u'yearlyPaymentsPercentage': 0.86, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
-            u'amount': 9023.638356164383, u'contractDuration': {u'days': 40, u'years': 13},
-            u'amountPerformance': 672.4650719957199,
-            u'annualCostsReduction': [200.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0,
-                                      800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0]}}]
-
-    mock_prepare_bids_stage = mocker.MagicMock(return_value='prepared_bids_stage')
-    mocker.patch('openprocurement.auction.esco.mixins.prepare_bids_stage', mock_prepare_bids_stage)
-    mock_prepare_results_stage = mocker.MagicMock(return_value='prepared_results_stage')
-    mocker.patch('openprocurement.auction.esco.mixins.prepare_results_stage', mock_prepare_results_stage)
-
-    mock_get_round_number = mocker.patch.object(auction, 'get_round_number', autospec=True)
-    mock_get_round_number.return_value = 2
-
-    mocker.spy(auction, 'get_round_stages')
-
-    auction.update_future_bidding_orders([{'bid_1': 'bid_1'}, {'bid_2': 'bid_2'}])
-
-    assert auction.auction_document['results'] == ['prepared_results_stage', 'prepared_results_stage']
-    assert auction.auction_document['stages'][7] == 'prepared_bids_stage'
-    assert auction.auction_document['stages'][8] == 'prepared_bids_stage'
-
-    mock_get_round_number.assert_called_once_with(-1)
-    assert auction.get_round_stages.call_count == 1
-    assert mock_prepare_bids_stage.call_count == 2
-    assert mock_prepare_results_stage.call_count == 2
-
-
 def test_end_bids_stage(auction, mocker, logger):
     auction.bidders_data = [
         {'date': u'2017-09-19T08:22:21.726234+00:00', 'id': u'd3ba84c66c9e4f34bfb33cc3c686f137', 'value': {
@@ -406,3 +308,92 @@ def test_end_bids_stage(auction, mocker, logger):
     auction.end_bids_stage(3)
 
     assert mock_end_auction_event.set.call_count == 1
+
+
+def test_update_future_bidding_orders(auction, mocker):
+    auction.auction_document = {"current_stage": -1, 'initial_bids': [], 'stages': ['','','','','','','','','','','']}
+    auction.bidders_count = 2
+    auction.mapping = {u'5675acc9232942e8940a034994ad883e': '2', u'd3ba84c66c9e4f34bfb33cc3c686f137': '1'}
+    auction.bidders_data = [
+        {'date': u'2017-09-19T08:22:21.726234+00:00', 'id': u'd3ba84c66c9e4f34bfb33cc3c686f137', 'value': {
+            u'yearlyPaymentsPercentage': 0.85, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
+            u'amount': 9752.643835616438, u'contractDuration': {u'days': 200, u'years': 12},
+            u'amountPerformance': 850.1281928765416,
+            u'annualCostsReduction': [400.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0,
+                                      900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0]}},
+        {'date': u'2017-09-19T08:22:24.038426+00:00', 'id': u'5675acc9232942e8940a034994ad883e', 'value': {
+            u'yearlyPaymentsPercentage': 0.86, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
+            u'amount': 9023.638356164383, u'contractDuration': {u'days': 40, u'years': 13},
+            u'amountPerformance': 672.4650719957199,
+            u'annualCostsReduction': [200.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0,
+                                      800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0]}}]
+
+    mock_prepare_bids_stage = mocker.MagicMock(return_value='prepared_bids_stage')
+    mocker.patch('openprocurement.auction.esco.mixins.prepare_bids_stage', mock_prepare_bids_stage)
+    mock_prepare_results_stage = mocker.MagicMock(return_value='prepared_results_stage')
+    mocker.patch('openprocurement.auction.esco.mixins.prepare_results_stage', mock_prepare_results_stage)
+
+    mock_get_round_number = mocker.patch.object(auction, 'get_round_number', autospec=True)
+    mock_get_round_number.return_value = 2
+
+    mocker.spy(auction, 'get_round_stages')
+
+    auction.update_future_bidding_orders([{'bid_1': 'bid_1'}, {'bid_2': 'bid_2'}])
+
+    assert auction.auction_document['results'] == ['prepared_results_stage', 'prepared_results_stage']
+    assert auction.auction_document['stages'][7] == 'prepared_bids_stage'
+    assert auction.auction_document['stages'][8] == 'prepared_bids_stage'
+
+    mock_get_round_number.assert_called_once_with(-1)
+    assert auction.get_round_stages.call_count == 1
+    assert mock_prepare_bids_stage.call_count == 2
+    assert mock_prepare_results_stage.call_count == 2
+
+
+def test_prepare_auction_stages(auction, mocker):
+    auction.startDate = datetime(2017, 10, 10, 0, 0)
+    auction.auction_document = {"current_stage": -1, 'initial_bids': []}
+    auction.bidders_count = 2
+    auction.mapping = {u'5675acc9232942e8940a034994ad883e': '2', u'd3ba84c66c9e4f34bfb33cc3c686f137': '1'}
+    auction.bidders_data = [
+        {'date': u'2017-09-19T08:22:21.726234+00:00', 'id': u'd3ba84c66c9e4f34bfb33cc3c686f137', 'value': {
+            u'yearlyPaymentsPercentage': 0.85, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
+            u'amount': 9752.643835616438, u'contractDuration': {u'days': 200, u'years': 12},
+            u'amountPerformance': 850.1281928765416,
+            u'annualCostsReduction': [400.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0,
+                                      900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0]}},
+        {'date': u'2017-09-19T08:22:24.038426+00:00', 'id': u'5675acc9232942e8940a034994ad883e', 'value': {
+            u'yearlyPaymentsPercentage': 0.86, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
+            u'amount': 9023.638356164383, u'contractDuration': {u'days': 40, u'years': 13},
+            u'amountPerformance': 672.4650719957199,
+            u'annualCostsReduction': [200.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0,
+                                      800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0]}}]
+
+    mock_prepare_initial_bid_stage = mocker.MagicMock(side_effect=[
+        {'amount': '0',
+         'annualCostsReduction': '0',
+         'bidder_id': u'd3ba84c66c9e4f34bfb33cc3c686f137',
+         'label': {'en': 'Bidder #1',
+                   'ru': '\xd0\xa3\xd1\x87\xd0\xb0\xd1\x81\xd1\x82\xd0\xbd\xd0\xb8\xd0\xba \xe2\x84\x961',
+                   'uk': '\xd0\xa3\xd1\x87\xd0\xb0\xd1\x81\xd0\xbd\xd0\xb8\xd0\xba \xe2\x84\x961'},
+         'time': ''},
+        {'amount': '0',
+         'annualCostsReduction': '0',
+         'bidder_id': u'5675acc9232942e8940a034994ad883e',
+         'label': {'en': 'Bidder #2',
+                   'ru': '\xd0\xa3\xd1\x87\xd0\xb0\xd1\x81\xd1\x82\xd0\xbd\xd0\xb8\xd0\xba \xe2\x84\x962',
+                   'uk': '\xd0\xa3\xd1\x87\xd0\xb0\xd1\x81\xd0\xbd\xd0\xb8\xd0\xba \xe2\x84\x962'},
+         'time': ''}])
+    mocker.patch('openprocurement.auction.esco.mixins.prepare_initial_bid_stage', mock_prepare_initial_bid_stage)
+    mocker.spy(mixins, 'prepare_service_stage')
+    mocker.spy(mixins, 'prepare_bids_stage')
+
+    auction.prepare_auction_stages()
+
+    assert auction.auction_document['auction_type'] == 'default'
+    assert mock_prepare_initial_bid_stage.call_count == len(tender_data['data']['bids'])
+    assert len(auction.auction_document['initial_bids']) == len(tender_data['data']['bids'])
+    # 3 rounds with stage for each bid and pause stage. And 2 stages at the end.
+    assert len(auction.auction_document['stages']) == (len(tender_data['data']['bids']) + 1) * 3 + 2
+    assert mixins.prepare_service_stage.call_count == 5
+    assert mixins.prepare_bids_stage.call_count == 6
