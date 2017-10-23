@@ -65,7 +65,9 @@ def post_results_data(self, with_auctions_results=True):
                 for lot_index, lot_bid in enumerate(bid['lotValues']):
                     if lot_bid['relatedLot'] == self.lot_id and lot_bid.get('status', 'active') == 'active':
                         auction_bid_info = get_latest_bid_for_bidder(self.auction_document["results"], bid["id"])
-                        patch_data['data']['bids'][bid_index]['lotValues'][lot_index]["value"]["amount"] = auction_bid_info["amount"]
+                        patch_data['data']['bids'][bid_index]['lotValues'][lot_index]["value"]["yearlyPaymentsPercentage"] = auction_bid_info["yearlyPaymentsPercentage"]
+                        patch_data['data']['bids'][bid_index]['lotValues'][lot_index]["value"]["contractDuration"]["days"] = auction_bid_info["contractDurationDays"]
+                        patch_data['data']['bids'][bid_index]['lotValues'][lot_index]["value"]["contractDuration"]["years"] = auction_bid_info["contractDurationYears"]
                         patch_data['data']['bids'][bid_index]['lotValues'][lot_index]["date"] = auction_bid_info["time"]
                         break
 

@@ -97,12 +97,11 @@
         "yearlyPaymentsPercentage": 0.85,
         "valueAddedTaxIncluded": true,
         "currency": "UAH",
-        "amount": 9752.643835616438,
+        "amountPerformance": 850.1281928765416,
         "contractDuration": {
           "days": 200,
           "years": 12
         },
-        "amountPerformance": 850.1281928765416,
         "annualCostsReduction": [
           400.0,
           900.0,
@@ -134,7 +133,6 @@
             "yearlyPaymentsPercentage": 0.86,
             "valueAddedTaxIncluded": true,
             "currency": "UAH",
-            "amount": 9023.638356164383,
             "contractDuration": {
               "days": 40,
               "years": 13

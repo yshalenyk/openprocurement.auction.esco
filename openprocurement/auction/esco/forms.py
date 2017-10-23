@@ -7,6 +7,7 @@ from wtforms.validators import InputRequired, ValidationError, StopValidation, N
 from wtforms_json import init; init()
 from dateutil import parser
 
+from openprocurement.auction.esco.utils import to_decimal
 from openprocurement.auction.esco.constants import DAYS_IN_YEAR, MAX_CONTRACT_DURATION
 from openprocurement.auction.utils import prepare_extra_journal_fields
 from esculator import npv
@@ -51,7 +52,7 @@ def validate_bid_change_on_bidding(form, amount_npv):
             raise ValidationError(message)
     else:
         max_bid = form.document['stages'][stage_id]['amount']
-        if amount_npv < (max_bid + form.document['minimalStep']['amount']):
+        if amount_npv < (Fraction(max_bid) + (Fraction(max_bid) * form.document['minimalStepPercentage'])):
             errors = form.errors.get('form', [])
             message = u'Amount NPV: Too low value'
             errors.append(message)
@@ -109,7 +110,6 @@ class BidsForm(Form):
                              annual_costs_reduction,
                              parser.parse(self.auction.auction_document['noticePublicationDate']), # XXX TODO TEMP!!!!!
                              nbu_rate)
-
                 stage_id = self.document['current_stage']
                 if self.document['stages'][stage_id]['type'] == 'bids':
                     validate_bid_change_on_bidding(self, amount)
@@ -137,9 +137,10 @@ def form_handler():
             # write data
             auction.add_bid(form.document['current_stage'], {
                 'bidder_id': form.data['bidder_id'],
-                'amount': total_amount,
-                'contractDuration': form.data['contractDuration'],
+                'amount': str(total_amount),
+                'contractDurationYears': form.data['contractDuration'],
                 'contractDurationDays': form.data['contractDurationDays'],
+                'yearlyPaymentsPercentage': float(form.data['yearlyPaymentsPercentage']),
                 'time': current_time.isoformat()
             })
             if form.data['yearlyPaymentsPercentage']:

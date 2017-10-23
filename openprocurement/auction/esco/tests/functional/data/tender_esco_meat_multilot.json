@@ -1,0 +1,220 @@
+{
+  "data": {
+    "features": [
+      {
+        "code": "OCDS-123454-AIR-INTAKE", 
+        "description": "\u0415\u0444\u0435\u043a\u0442\u0438\u0432\u043d\u0430 \u043f\u043e\u0442\u0443\u0436\u043d\u0456\u0441\u0442\u044c \u0432\u0441\u043c\u043e\u043a\u0442\u0443\u0432\u0430\u043d\u043d\u044f \u043f\u0438\u043b\u043e\u0441\u043e\u0441\u0430, \u0432 \u0432\u0430\u0442\u0430\u0445 (\u0430\u0435\u0440\u043e\u0432\u0430\u0442\u0430\u0445)", 
+        "title": "\u041f\u043e\u0442\u0443\u0436\u043d\u0456\u0441\u0442\u044c \u0432\u0441\u043c\u043e\u043a\u0442\u0443\u0432\u0430\u043d\u043d\u044f", 
+        "enum": [
+          {
+            "value": 0.03, 
+            "title": "\u0414\u043e 1000 \u0412\u0442"
+          }, 
+          {
+            "value": 0.07, 
+            "title": "\u0411\u0456\u043b\u044c\u0448\u0435 1000 \u0412\u0442"
+          }
+        ], 
+        "title_en": "Air Intake", 
+        "relatedItem": "1", 
+        "featureOf": "item"
+      }, 
+      {
+        "code": "OCDS-123454-YEARS", 
+        "description": "\u041a\u0456\u043b\u044c\u043a\u0456\u0441\u0442\u044c \u0440\u043e\u043a\u0456\u0432, \u044f\u043a\u0456 \u043e\u0440\u0433\u0430\u043d\u0456\u0437\u0430\u0446\u0456\u044f \u0443\u0447\u0430\u0441\u043d\u0438\u043a \u043f\u0440\u0430\u0446\u044e\u0454 \u043d\u0430 \u0440\u0438\u043d\u043a\u0443", 
+        "title": "\u0420\u043e\u043a\u0456\u0432 \u043d\u0430 \u0440\u0438\u043d\u043a\u0443", 
+        "enum": [
+          {
+            "value": 0.03, 
+            "title": "\u0414\u043e 3 \u0440\u043e\u043a\u0456\u0432"
+          }, 
+          {
+            "value": 0.05, 
+            "title": "\u0411\u0456\u043b\u044c\u0448\u0435 3 \u0440\u043e\u043a\u0456\u0432, \u043c\u0435\u043d\u0448\u0435 5 \u0440\u043e\u043a\u0456\u0432"
+          }, 
+          {
+            "value": 0.07, 
+            "title": "\u0411\u0456\u043b\u044c\u0448\u0435 5 \u0440\u043e\u043a\u0456\u0432"
+          }
+        ], 
+        "title_en": "Years trading", 
+        "featureOf": "tenderer"
+      }
+    ], 
+    "auctionPeriod": {
+      "startDate": "2017-10-20T12:03:20.219965+03:00"
+    }, 
+    "procurementMethodType": "esco", 
+    "NBUdiscountRate": 0.22, 
+    "fundingKind": "other", 
+    "lots": [
+      {
+        "status": "active", 
+        "minimalStepPercentage": 0.02514, 
+        "description": "lot description", 
+        "fundingKind": "other", 
+        "title": "lot title", 
+        "date": "2017-10-20T12:03:22.955610+03:00", 
+        "auctionPeriod": {
+          "startDate": "2017-10-20T12:03:20.219965+03:00", 
+          "shouldStartAfter": "2017-10-21T00:00:00+03:00"
+        }, 
+        "yearlyPaymentsPercentageRange": 0.8, 
+        "id": "2818e784cfdb4ce2af49a53ea67f4af2", 
+        "minValue": {
+          "currency": "UAH", 
+          "amount": 0.0, 
+          "valueAddedTaxIncluded": true
+        }
+      }
+    ], 
+    "items": [
+      {
+        "relatedLot": "2818e784cfdb4ce2af49a53ea67f4af2", 
+        "unit": {
+          "code": "44617100-9", 
+          "name": "item"
+        }, 
+        "additionalClassifications": [
+          {
+            "scheme": "\u0414\u041a\u041f\u041f", 
+            "id": "17.21.1", 
+            "description": "\u043f\u0430\u043f\u0456\u0440 \u0456 \u043a\u0430\u0440\u0442\u043e\u043d \u0433\u043e\u0444\u0440\u043e\u0432\u0430\u043d\u0456, \u043f\u0430\u043f\u0435\u0440\u043e\u0432\u0430 \u0439 \u043a\u0430\u0440\u0442\u043e\u043d\u043d\u0430 \u0442\u0430\u0440\u0430"
+          }
+        ], 
+        "description": "\u0444\u0443\u0442\u043b\u044f\u0440\u0438 \u0434\u043e \u0434\u0435\u0440\u0436\u0430\u0432\u043d\u0438\u0445 \u043d\u0430\u0433\u043e\u0440\u043e\u0434", 
+        "classification": {
+          "scheme": "\u0414\u041a021", 
+          "description": "Cartons", 
+          "id": "44617100-9"
+        }, 
+        "deliveryAddress": {
+          "postalCode": "79000", 
+          "countryName": "\u0423\u043a\u0440\u0430\u0457\u043d\u0430", 
+          "streetAddress": "\u0432\u0443\u043b. \u0411\u0430\u043d\u043a\u043e\u0432\u0430 1", 
+          "region": "\u043c. \u041a\u0438\u0457\u0432", 
+          "locality": "\u043c. \u041a\u0438\u0457\u0432"
+        }, 
+        "id": "1", 
+        "description_en": "Cases for state awards"
+      }
+    ], 
+    "bids": [
+      {
+        "date": "2017-10-20T12:03:23.102983+03:00", 
+        "status": "active", 
+        "lotValues": [
+          {
+            "relatedLot": "2818e784cfdb4ce2af49a53ea67f4af2", 
+            "date": "2017-10-20T12:03:23.103979+03:00", 
+            "status": "active", 
+            "value": {
+              "yearlyPaymentsPercentage": 0.9, 
+              "amountPerformance": 100.69, 
+              "currency": "UAH", 
+              "contractDuration": {
+                "days": 0, 
+                "years": 10
+              }, 
+              "valueAddedTaxIncluded": true, 
+              "annualCostsReduction": [
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0
+              ]
+            }
+          }
+        ], 
+        "id": "029fda85fbc642c38f6f1dcd8db70f3a", 
+        "parameters": [
+          {
+            "code": "OCDS-123454-AIR-INTAKE", 
+            "value": 0.03
+          }, 
+          {
+            "code": "OCDS-123454-YEARS", 
+            "value": 0.03
+          }
+        ]
+      }, 
+      {
+        "date": "2017-10-20T12:03:23.270465+03:00", 
+        "status": "active", 
+        "lotValues": [
+          {
+            "relatedLot": "2818e784cfdb4ce2af49a53ea67f4af2", 
+            "date": "2017-10-20T12:03:23.271309+03:00", 
+            "status": "active", 
+            "value": {
+              "yearlyPaymentsPercentage": 0.9, 
+              "amountPerformance": 100.69, 
+              "currency": "UAH", 
+              "contractDuration": {
+                "days": 0, 
+                "years": 10
+              }, 
+              "valueAddedTaxIncluded": true, 
+              "annualCostsReduction": [
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0, 
+                100.0
+              ]
+            }
+          }
+        ], 
+        "id": "5bb11f67e2f84cef8a828dcd38fdffc9", 
+        "parameters": [
+          {
+            "code": "OCDS-123454-AIR-INTAKE", 
+            "value": 0.07
+          }, 
+          {
+            "code": "OCDS-123454-YEARS", 
+            "value": 0.07
+          }
+        ]
+      }
+    ], 
+    "noticePublicationDate": "2017-10-20T12:03:22.930533+03:00", 
+    "tenderID": "UA-2017-10-20-000001", 
+    "minimalStepPercentage": 0.02514, 
+    "yearlyPaymentsPercentageRange": 0.8, 
+    "dateModified": "2017-10-20T12:03:24.531203+03:00"
+  }
+}
