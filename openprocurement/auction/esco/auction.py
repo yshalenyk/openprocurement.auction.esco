@@ -204,7 +204,8 @@ class Auction(ESCODBServiceMixin,
             if self.features:
                 amount_features = cooking(
                     amount,
-                    self.features, self.bidders_features[bid["id"]]
+                    self.features, self.bidders_features[bid["id"]],
+                    reverse=True
                 )
                 coeficient = self.bidders_coeficient[bid["id"]]
                 audit_info["amount_features"] = str(amount_features)

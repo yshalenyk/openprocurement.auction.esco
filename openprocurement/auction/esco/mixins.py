@@ -3,6 +3,8 @@ from datetime import datetime, timedelta
 from copy import deepcopy
 from dateutil.tz import tzlocal
 from barbecue import cooking
+from fractions import Fraction
+
 
 from openprocurement.auction.utils import\
     get_latest_bid_for_bidder, sorting_by_amount
@@ -126,7 +128,7 @@ class BiddersServiceMixin(BiddersServiceMixin):
             bid_info = {key: bid_info[key] for key in BIDS_KEYS_FOR_COPY}
             bid_info["bidder_name"] = self.mapping[bid_info['bidder_id']]
             if self.features:
-                bid_info['amount_features'] = str(Fraction(bid_info['amount']) / self.bidders_coeficient[bid_info['bidder_id']])
+                bid_info['amount_features'] = str(Fraction(bid_info['amount']) * self.bidders_coeficient[bid_info['bidder_id']])
             self.auction_document["stages"][self.current_stage] = prepare_bids_stage(
                 self.auction_document["stages"][self.current_stage],
                 bid_info
@@ -191,7 +193,8 @@ class EscoStagesMixin(StagesServiceMixin):
             if self.features:
                 amount_features = cooking(
                     amount,
-                    self.features, self.bidders_features[bid["id"]]
+                    self.features, self.bidders_features[bid["id"]],
+                    reverse=True
                 )
                 coeficient = self.bidders_coeficient[bid["id"]]
 
