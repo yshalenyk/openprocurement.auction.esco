@@ -147,7 +147,11 @@ class EscoPostAuctionMixin(PostAuctionServiceMixin):
         else:
             doc_id = self.upload_audit_file_without_document_service()
 
-        results = self._type.post_results_data(self)
+        # results = self._type.post_results_data(self) TODO: initialize self._type field
+        if self.lot_id:
+            results = multilot.post_results_data(self)
+        else:
+            results = simple.post_results_data(self)
 
         if results:
             if self.lot_id:

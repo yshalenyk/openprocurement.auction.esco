@@ -29,9 +29,8 @@ def validate_value(form, field):
 
 def validate_yearly_payments_percentage(form, field):
     data = field.data
-    if not Fraction(0) <= Fraction(data) <= Fraction(100):
+    if not Fraction(0) <= Fraction(data) <= Fraction(1):
         message = u'Percentage value must be between 0 and 100'
-        form[field.name].errors.append(message)
         raise ValidationError(message)
 
 
