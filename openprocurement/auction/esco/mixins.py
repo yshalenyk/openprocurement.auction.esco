@@ -87,7 +87,7 @@ class ESCODBServiceMixin(DBServiceMixin):
             self.set_auction_and_participation_urls()
 
 
-class BiddersServiceMixin(BiddersServiceMixin):
+class ESCOBiddersServiceMixin(BiddersServiceMixin):
     """Mixin class to work with bids data"""
 
     def set_auction_and_participation_urls(self):
@@ -150,7 +150,7 @@ class EscoPostAuctionMixin(PostAuctionServiceMixin):
         results = self._type.post_results_data(self)
 
         if results:
-            if hasattr(self, 'lot_id'):
+            if self.lot_id:
                 bids_information = None
             else:
                 bids_information = self._type.announce_results_data(self, results)
@@ -258,6 +258,7 @@ class EscoStagesMixin(StagesServiceMixin):
             minimal_bids.append(get_latest_bid_for_bidder(
                 all_bids, str(bid_info['id'])
             ))
+        # import pdb; pdb.set_trace()
         minimal_bids = self.filter_bids_keys(sorting_by_amount(minimal_bids))
         self.update_future_bidding_orders(minimal_bids)
 
