@@ -15,7 +15,6 @@ cache:
   directories:
     - eggs
 before_install:
-  - pip install setuptools==29.0.1
   - python2 bootstrap.py
   - mv openprocurement/auction/esco/tests/data/travis_worker_esco.yaml openprocurement/auction/esco/tests/data/auction_worker_esco.yaml
 install:
