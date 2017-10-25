@@ -4,6 +4,7 @@ from setuptools import setup, find_packages
 VERSION = '0.1.0'
 INSTALL_REQUIRES = [
     'setuptools',
+    'esculator',
     'openprocurement.auction',
     'openprocurement.auction.worker'
 ]
