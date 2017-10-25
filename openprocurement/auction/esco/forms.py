@@ -35,6 +35,12 @@ def validate_yearly_payments_percentage(form, field):
         raise ValidationError(message)
 
 
+def validate_contract_duration(form, field):
+    if field.data and form.contractDuration.data:
+        if (Fraction(field.data, DAYS_IN_YEAR) + form.contractDuration.data) > MAX_CONTRACT_DURATION:
+            raise ValidationError(u'Maximun contract duration is 15 years')
+
+
 def validate_bid_change_on_bidding(form, amount_npv):
     """
     Bid must be higher then previous bidder bid amount minus minimalStep amount
@@ -68,15 +74,21 @@ class BidsForm(Form):
 
     yearlyPaymentsPercentage = DecimalField(
         'yearlyPaymentsPercentage',
-        validators=[validate_yearly_payments_percentage]
+        validators=[
+            validate_yearly_payments_percentage,
+            InputRequired(message=u'Provide yearlyPaymentsPercentage')
+        ]
     )
     contractDuration = IntegerField(
         'contractDuration',
-        validators=[NumberRange(0, MAX_CONTRACT_DURATION)]
+        validators=[NumberRange(0, MAX_CONTRACT_DURATION, 'contractDuration must be between %(min)s and %(max)s.')]
     )
     contractDurationDays = IntegerField(
         'contractDurationDays',
-        validators=[NumberRange(0, DAYS_IN_YEAR-1)]
+        validators=[
+            validate_contract_duration,
+            NumberRange(0, DAYS_IN_YEAR-1, 'contractDurationDays must be between %(min)s and %(max)s.')
+        ]
     )
 
     def validate_bidder_id(self, field):
@@ -88,13 +100,6 @@ class BidsForm(Form):
         if super(BidsForm, self).validate():
             # TODO: use default contractDurationDays if not provided
             try:
-                if not self.yearlyPaymentsPercentage.data:
-                    self.yearlyPaymentsPercentage.errors\
-                        .append(u'Provide yearlyPaymentsPercentage')
-                if self.contractDurationDays.data and self.contractDuration.data:
-                    if (Fraction(self.contractDurationDays.data, DAYS_IN_YEAR) + self.contractDuration.data) > MAX_CONTRACT_DURATION:
-                        self.contractDurationDays.errors.append(u'Maximun contract duration is 15 years')
-                        raise ValidationError(u'Maximun contract duration is 15 years')
                 if self.yearlyPaymentsPercentage.data == -1:
                     return -1
 
