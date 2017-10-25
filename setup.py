@@ -18,7 +18,7 @@ ENTRY_POINTS = {
         'auction_esco = openprocurement.auction.esco.cli:main',
     ],
     'openprocurement.auction.auctions': [
-        'esco.EU = openprocurement.auction.esco.includeme:includeme'
+        'esco = openprocurement.auction.esco.includeme:includeme'
     ],
     'openprocurement.auction.robottests': [
         'esco_tests = openprocurement.auction.esco.tests.functional.main:includeme'
