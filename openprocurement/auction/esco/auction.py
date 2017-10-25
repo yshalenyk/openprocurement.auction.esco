@@ -243,7 +243,7 @@ class Auction(ESCODBServiceMixin,
                 all_bids, str(bid_info['id'])
             ))
 
-        minimal_bids = self.filter_bids_keys(sorting_by_amount(minimal_bids))
+        minimal_bids = self.filter_bids_keys(sorting_by_amount(minimal_bids, reverse=False))
         self.update_future_bidding_orders(minimal_bids)
         self.save_auction_document()
 
@@ -284,7 +284,7 @@ class Auction(ESCODBServiceMixin,
         minimal_bids = deepcopy(
             self.auction_document["stages"][start_stage:end_stage]
         )
-        minimal_bids = self.filter_bids_keys(sorting_by_amount(minimal_bids))
+        minimal_bids = self.filter_bids_keys(sorting_by_amount(minimal_bids, reverse=False))
         self.auction_document["results"] = []
         for item in minimal_bids:
             self.auction_document["results"].append(prepare_results_stage(**item))

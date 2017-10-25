@@ -191,7 +191,7 @@ class EscoStagesMixin(StagesServiceMixin):
         self.auction_document['auction_type'] = 'meat' if self.features else 'default'
         bids = deepcopy(self.bidders_data)
         self.auction_document["initial_bids"] = []
-        bids_info = sorting_start_bids_by_amount(bids, features=self.features)
+        bids_info = sorting_start_bids_by_amount(bids, features=self.features, reverse=False)
         for index, bid in enumerate(bids_info):
             amount = bid["value"]["amountPerformance"]
             annualCostsReduction = bid["value"]["annualCostsReduction"]
@@ -264,7 +264,7 @@ class EscoStagesMixin(StagesServiceMixin):
                 all_bids, str(bid_info['id'])
             ))
 
-        minimal_bids = self.filter_bids_keys(sorting_by_amount(minimal_bids))
+        minimal_bids = self.filter_bids_keys(sorting_by_amount(minimal_bids, reverse=False))
         self.update_future_bidding_orders(minimal_bids)
 
         self.auction_document['endDate'] = next_stage_timedelta.isoformat()
@@ -297,7 +297,7 @@ class EscoStagesMixin(StagesServiceMixin):
                     get_latest_bid_for_bidder(all_bids, bid_info['id'])
                 )
             minimal_bids = self.filter_bids_keys(
-                sorting_by_amount(minimal_bids)
+                sorting_by_amount(minimal_bids, reverse=False)
             )
             self.update_future_bidding_orders(minimal_bids)
 

@@ -98,7 +98,7 @@ def sorting_start_bids_by_amount(bids, features=None, reverse=True):
         return item['value']['amountPerformance']
 
     # return sorted(bids, key=get_amount, reverse=reverse)
-    return chef(bids, features=features, awarding_criteria_key="amountPerformance")
+    return chef(bids, features=features, awarding_criteria_key="amountPerformance", reverse=reverse)
 
 
 def to_decimal(fraction):
