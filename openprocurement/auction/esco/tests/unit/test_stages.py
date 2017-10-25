@@ -112,20 +112,21 @@ def test_prepare_auction_stages_fast_forward_no_features(auction, mocker):
     assert mixins.prepare_service_stage.call_count == 5
     assert mixins.prepare_bids_stage.call_count == 6
     auction.update_future_bidding_orders.assert_called_once_with(
-        [{'amount': 9752.643835616438,
-          'yearlyPaymentsPercentage': 0.86,
-          'contractDurationDays': 40,
-          'contractDurationYears': 13,
-          'bidder_id': u'd3ba84c66c9e4f34bfb33cc3c686f137',
-          'bidder_name': '1',
-          'time': '2017-09-19T08:22:21.726234+00:00'},
-         {'amount': 9023.638356164383,
+        [{'amount': 9023.638356164383,
           'yearlyPaymentsPercentage': 0.85,
           'contractDurationDays': 200,
           'contractDurationYears': 12,
           'bidder_id': u'5675acc9232942e8940a034994ad883e',
           'bidder_name': '2',
-          'time': '2017-09-19T08:22:24.038426+00:00'}]
+          'time': '2017-09-19T08:22:24.038426+00:00'},
+         {'amount': 9752.643835616438,
+          'yearlyPaymentsPercentage': 0.86,
+          'contractDurationDays': 40,
+          'contractDurationYears': 13,
+          'bidder_id': u'd3ba84c66c9e4f34bfb33cc3c686f137',
+          'bidder_name': '1',
+          'time': '2017-09-19T08:22:21.726234+00:00'}
+         ]
     )
 
 
