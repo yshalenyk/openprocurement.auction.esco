@@ -29,8 +29,9 @@ def validate_value(form, field):
 
 def validate_yearly_payments_percentage(form, field):
     data = field.data
-    if not Fraction(0) <= Fraction(data) <= Fraction(1):
-        message = u'Percentage value must be between 0 and 100'
+    yearly_payments_percentage_range = app.config['auction'].auction_document['yearlyPaymentsPercentageRange']
+    if not Fraction(yearly_payments_percentage_range) <= Fraction(data) <= Fraction(1):
+        message = u'Percentage value must be between {} and 100'.format(yearly_payments_percentage_range*100)
         raise ValidationError(message)
 
 
@@ -75,7 +76,7 @@ class BidsForm(Form):
     )
     contractDurationDays = IntegerField(
         'contractDurationDays',
-        validators=[NumberRange(0, DAYS_IN_YEAR)]
+        validators=[NumberRange(0, DAYS_IN_YEAR-1)]
     )
 
     def validate_bidder_id(self, field):
@@ -93,6 +94,7 @@ class BidsForm(Form):
                 if self.contractDurationDays.data and self.contractDuration.data:
                     if (Fraction(self.contractDurationDays.data, DAYS_IN_YEAR) + self.contractDuration.data) > MAX_CONTRACT_DURATION:
                         self.contractDurationDays.errors.append(u'Maximun contract duration is 15 years')
+                        raise ValidationError(u'Maximun contract duration is 15 years')
                 if self.yearlyPaymentsPercentage.data == -1:
                     return -1
 

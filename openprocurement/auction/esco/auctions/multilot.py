@@ -33,7 +33,8 @@ def prepare_auction_document(self):
          'procuringEntity': self._auction_data['data'].get('procuringEntity', {}),
          'items': self._lot_data.get('items', []),
          'minValue': self._lot_data.get('value', {}),
-         'lot': {}}
+         'lot': {},
+         "yearlyPaymentsPercentageRange": self._auction_data["data"].get("yearlyPaymentsPercentageRange")}
     )
     self.auction_document['auction_type'] = 'meat' if self.features else 'default'
 
