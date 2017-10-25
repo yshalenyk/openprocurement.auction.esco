@@ -157,7 +157,8 @@ class EscoPostAuctionMixin(PostAuctionServiceMixin):
             if self.lot_id:
                 bids_information = None
             else:
-                bids_information = self._type.announce_results_data(self, results)
+                # bids_information = self._type.announce_results_data(self, results) TODO: initialize self._type field
+                bids_information = simple.announce_results_data(self, results)
 
             if doc_id and bids_information:
                 self.approve_audit_info_on_announcement(approved=bids_information)
@@ -262,7 +263,7 @@ class EscoStagesMixin(StagesServiceMixin):
             minimal_bids.append(get_latest_bid_for_bidder(
                 all_bids, str(bid_info['id'])
             ))
-        # import pdb; pdb.set_trace()
+
         minimal_bids = self.filter_bids_keys(sorting_by_amount(minimal_bids))
         self.update_future_bidding_orders(minimal_bids)
 
