@@ -16,6 +16,7 @@ from openprocurement.auction.worker.journal import (
     AUCTION_WORKER_SERVICE_END_BID_STAGE,
     AUCTION_WORKER_SERVICE_START_STAGE,
     AUCTION_WORKER_SERVICE_START_NEXT_STAGE,
+    AUCTION_WORKER_BIDS_LATEST_BID_CANCELLATION
 )
 from openprocurement.auction.esco.constants import BIDS_KEYS_FOR_COPY
 from openprocurement.auction.esco.auctions import simple, multilot
@@ -32,12 +33,6 @@ LOGGER = logging.getLogger("Auction Esco")
 
 class ESCODBServiceMixin(DBServiceMixin):
     """ Mixin class to work with couchdb"""
-
-    def get_auction_info(self, prepare=False):
-        if self.lot_id:
-            multilot.get_auction_info(self, prepare)
-        else:
-            simple.get_auction_info(self, prepare)
 
     def prepare_auction_document(self):
         self.generate_request_id()
@@ -89,23 +84,6 @@ class ESCODBServiceMixin(DBServiceMixin):
 
 class ESCOBiddersServiceMixin(BiddersServiceMixin):
     """Mixin class to work with bids data"""
-
-    def set_auction_and_participation_urls(self):
-        if self.lot_id:
-            multilot.prepare_auction_and_participation_urls(self)
-        else:
-            simple.prepare_auction_and_participation_urls(self)
-
-    def filter_bids_keys(self, bids):
-        filtered_bids_data = []
-        for bid_info in bids:
-            bid_info_result = {key: bid_info[key] for key in BIDS_KEYS_FOR_COPY}
-            if self.features:
-                bid_info_result['amount_features'] = bid_info['amount_features']
-                bid_info_result['coeficient'] = bid_info['coeficient']
-            bid_info_result["bidder_name"] = self.mapping[bid_info_result['bidder_id']]
-            filtered_bids_data.append(bid_info_result)
-        return filtered_bids_data
 
     def approve_bids_information(self):
         if self.current_stage in self._bids_data:
@@ -174,15 +152,6 @@ class EscoPostAuctionMixin(PostAuctionServiceMixin):
                 extra={"JOURNAL_REQUEST_ID": self.request_id,
                        "MESSAGE_ID": AUCTION_WORKER_API_AUCTION_RESULT_NOT_APPROVED}
             )
-
-    def post_announce(self):
-        self.generate_request_id()
-        self.get_auction_document()
-        if self.lot_id:
-            multilot.announce_results_data(self, None)
-        else:
-            simple.announce_results_data(self, None)
-        self.save_auction_document()
 
 
 class EscoStagesMixin(StagesServiceMixin):
