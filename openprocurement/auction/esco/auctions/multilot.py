@@ -29,6 +29,7 @@ def prepare_auction_document(self):
          'current_stage': -1,
          "NBUdiscountRate": self._auction_data["data"].get("NBUdiscountRate"),
          'results': [],
+         "noticePublicationDate": self._auction_data["data"].get("noticePublicationDate"),
          'minimalStepPercentage': self._lot_data.get('minimalStepPercentage', {}),
          'procuringEntity': self._auction_data['data'].get('procuringEntity', {}),
          'items': self._lot_data.get('items', []),
