@@ -27,13 +27,12 @@ def prepare_users_data(tender_data):
             lot_id_appendix = "_" + tender_data["lots"][0]["id"]
         else:
             lot_id_appendix = ""
-        auction_id = "11111111111111111111111111111111"
+        auction_id = "22222222222222222222222222222222"
 
         users_data[bid["id"]] = {
             'login_url': auction_worker_defaults_info['AUCTIONS_URL'].format(auction_id=auction_id) + lot_id_appendix + '/login?bidder_id={}&hash={}'.format(
                 bid["id"], calculate_hash(bid["id"], auction_worker_defaults_info["HASH_SECRET"])
             ),
-            'amount': bid['value']['amount'],
             'position': positions[index],
             'size': size
         }
