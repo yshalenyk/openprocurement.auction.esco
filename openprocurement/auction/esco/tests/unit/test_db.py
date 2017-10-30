@@ -5,8 +5,12 @@ from constants import AUCTIONS
 
 def test_get_auction_info(universal_auction, mocker):
     mock_get_auction_info = mocker.MagicMock()
-    mocker.patch('{}.get_auction_info'.format(AUCTIONS['simple']), mock_get_auction_info)
-    mocker.patch('{}.get_auction_info'.format(AUCTIONS['multilot']), mock_get_auction_info)
+    # mocker.patch('{}.get_auction_info'.format(AUCTIONS['simple']), mock_get_auction_info)
+    # mocker.patch('{}.get_auction_info'.format(AUCTIONS['multilot']), mock_get_auction_info)
+    base = 'openprocurement.auction.worker.auctions.{}.get_auction_info'
+    mocker.patch(base.format('simple'), mock_get_auction_info)
+    mocker.patch(base.format('multilot'), mock_get_auction_info)
+
 
     universal_auction.get_auction_info()
 

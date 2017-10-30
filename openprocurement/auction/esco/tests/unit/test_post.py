@@ -96,8 +96,9 @@ def test_post_announce(universal_auction, mocker):
     mock_get_auction_document = mocker.patch.object(universal_auction, 'get_auction_document', autospec=True)
     mock_save_auction_document = mocker.patch.object(universal_auction, 'save_auction_document', autospec=True)
     mock_announce_results_data = mocker.MagicMock()
-    mocker.patch('{}.announce_results_data'.format(AUCTIONS['simple']), mock_announce_results_data)
-    mocker.patch('{}.announce_results_data'.format(AUCTIONS['multilot']), mock_announce_results_data)
+    base = 'openprocurement.auction.worker.auctions.{}.announce_results_data'
+    mocker.patch(base.format('simple'), mock_announce_results_data)
+    mocker.patch(base.format('multilot'), mock_announce_results_data)
 
     universal_auction.post_announce()
 
