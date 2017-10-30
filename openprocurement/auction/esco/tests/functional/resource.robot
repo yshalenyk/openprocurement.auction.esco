@@ -7,7 +7,7 @@ Library        openprocurement.auction.esco.tests.functional.service_keywords
 
 *** Variables ***
 ${USERS}
-${BROWSER}      chrome 
+${BROWSER}      chrome
 
 *** Keywords ***
 Підготовка тесту
@@ -35,6 +35,11 @@ ${BROWSER}      chrome
     Highlight Elements With Text On Time    Browser ID
     Wait Until Page Contains   Session ID
     Highlight Elements With Text On Time    Session ID
+    Wait Until Page Contains   Крок зменшення торгів
+    ${persentage}=  Get Text    xpath=(//strong[@class='ng-binding'])
+    ${minimalStepPercentage}=  convert_amount_to_number  ${persentage}
+    Should Be Equal  ${minimalStepPercentage}  ${TENDER['minimalStepPercentage']}
+    Highlight Element    xpath=(//strong[@class='ng-binding'])
     Capture Page Screenshot
     Press Key                  xpath=/html/body/div/div[1]/div/div[1]/div[1]/button     \\27
     sleep                      1s
@@ -67,7 +72,4 @@ ${BROWSER}      chrome
 
 Перевірити інформацію про тендер
     Page Should Contain   ${TENDER['title']}                    # tender title
-    Page Should Contain   ${TENDER['procuringEntity']['name']}  # tender procuringEntity name
-
-
-
+    Page Should Contain   ${TENDER['tenderID']}  # tender id
