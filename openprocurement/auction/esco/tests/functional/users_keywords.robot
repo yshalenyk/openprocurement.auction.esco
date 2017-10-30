@@ -42,6 +42,17 @@
     Поставити ставку еско  ${years}  ${days}  ${percent}   Заявку прийнято
 
 
+Спробувати вказати невалідну тривалість дії контракту
+    Поставити ставку еско  21  6  99   contractDuration must be between
+    Поставити ставку еско  14  365  99   contractDurationDays must be between
+    Поставити ставку еско  12   2132  99   contractDurationDays must be between
+    Поставити ставку еско  0  0  99   Maximun contract duration is
+
+
+Спробувати вказати невалідний відсоток щорічних платежів
+    Поставити ставку еско  2  123  79   Percentage value must be between
+
+
 Поставити велику ціну в ставці
     [Arguments]    ${extra_amount}
     Wait Until Page Contains Element    id=max_bid_amount_price
