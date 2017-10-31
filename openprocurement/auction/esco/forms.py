@@ -103,6 +103,12 @@ class BidsForm(Form):
                 if self.yearlyPaymentsPercentage.data == -1:
                     return -1
 
+                if self.contractDuration.data == 0 and self.contractDurationDays.data == 0:
+                    errors = self.errors.get('form', [])
+                    message = u'You can\'t bid 0 days and 0 years'
+                    errors.append(message)
+                    self.errors['form'] = errors
+                    raise ValidationError(message)
                 nbu_rate = self.auction.auction_document['NBUdiscountRate']
                 annual_costs_reduction = 0
                 for bid in self.document['initial_bids']:
