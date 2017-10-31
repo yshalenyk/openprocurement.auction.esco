@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask import request, session, current_app as app
 from fractions import Fraction
 from datetime import datetime
@@ -48,7 +49,7 @@ def validate_bid_change_on_bidding(form, amount_npv):
     stage_id = form.document['current_stage']
     if form.auction.features:
         max_bid = form.document['stages'][stage_id]['amount_features']
-        _max = Fraction(max_bid) * form.auction.bidders_coeficient[form.data['bidder_id']]
+        _max = Fraction(max_bid) * Fraction(form.auction.bidders_coeficient[form.data['bidder_id']])
         _max += Fraction(form.document['minimalStepPercentage'])
         if amount_npv < _max:
             errors = form.errors.get('form', [])
@@ -58,7 +59,7 @@ def validate_bid_change_on_bidding(form, amount_npv):
             raise ValidationError(message)
     else:
         max_bid = form.document['stages'][stage_id]['amount']
-        if amount_npv < (Fraction(max_bid) + (Fraction(max_bid) * form.document['minimalStepPercentage'])):
+        if amount_npv < (Fraction(max_bid) + (Fraction(max_bid) * Fraction(form.document['minimalStepPercentage']))):
             errors = form.errors.get('form', [])
             message = u'Amount NPV: Too low value'
             errors.append(message)
@@ -143,7 +144,7 @@ def form_handler():
             # write data
             auction.add_bid(form.document['current_stage'], {
                 'bidder_id': form.data['bidder_id'],
-                'amount': str(total_amount),
+                'amount': total_amount,
                 'contractDurationYears': form.data['contractDuration'],
                 'contractDurationDays': form.data['contractDurationDays'],
                 'yearlyPaymentsPercentage': float(form.data['yearlyPaymentsPercentage']),
