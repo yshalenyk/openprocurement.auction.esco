@@ -24,7 +24,7 @@ def prepare_initial_bid_stage(bidder_name="",
         uk="Учасник №{}".format(bidder_name),
         ru="Участник №{}".format(bidder_name)
     )
-    stage['amount'] = amount if amount else 0
+    stage['amount'] = Fraction(amount )if amount else Fraction('0')
     stage['yearlyPaymentsPercentage'] = yearlyPaymentsPercentage if yearlyPaymentsPercentage else 0
     stage['contractDurationDays'] = contractDurationDays if contractDurationDays else 0
     stage['contractDurationYears'] = contractDurationYears if contractDurationYears else 0
