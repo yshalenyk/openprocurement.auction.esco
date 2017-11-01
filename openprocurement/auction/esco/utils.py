@@ -1,4 +1,7 @@
 # -*- coding: utf-8 -*-
+import json
+from functools import partial
+from fractions import Fraction
 from barbecue import chef
 from decimal import Decimal
 
@@ -103,3 +106,12 @@ def sorting_start_bids_by_amount(bids, features=None, reverse=True):
 
 def to_decimal(fraction):
     return Decimal(fraction.numerator) / Decimal(fraction.denominator)
+
+
+class FractionEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Fraction):
+            return str(obj)
+        return super(FractionEncoder, self).default(obj)
+
+dumps = partial(json.dumps, cls=FractionEncoder)

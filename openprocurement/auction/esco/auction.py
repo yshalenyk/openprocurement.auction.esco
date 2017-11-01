@@ -1,4 +1,5 @@
 import logging
+import json
 
 from requests import Session as RequestsSession
 from urlparse import urljoin
@@ -7,6 +8,7 @@ from gevent.lock import BoundedSemaphore
 from gevent import sleep
 from apscheduler.schedulers.gevent import GeventScheduler
 from couchdb import Database, Session
+from couchdb.json import use
 from yaml import safe_dump as yaml_dump
 from copy import deepcopy
 from datetime import datetime
@@ -35,7 +37,8 @@ from openprocurement.auction.esco.journal import (
 from openprocurement.auction.esco.utils import (
     prepare_initial_bid_stage,
     prepare_results_stage,
-    sorting_start_bids_by_amount
+    sorting_start_bids_by_amount,
+    dumps
 )
 
 from openprocurement.auction.utils import\
@@ -48,6 +51,8 @@ SCHEDULER = GeventScheduler(job_defaults={"misfire_grace_time": 100},
                             logger=LOGGER)
 SCHEDULER.timezone = TIMEZONE
 
+
+use(encode=dumps, decode=json.loads)
 
 class Auction(ESCODBServiceMixin,
               RequestIDServiceMixin,

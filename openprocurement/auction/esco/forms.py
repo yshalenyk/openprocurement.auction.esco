@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import operator
 from flask import request, session, current_app as app
 from fractions import Fraction
 from datetime import datetime
@@ -17,14 +18,12 @@ from esculator import npv
 def validate_bidder_id_on_bidding(form, field):
     stage_id = form.document['current_stage']
     if field.data != form.document['stages'][stage_id]['bidder_id']:
-        form[field.name].errors.append(u'Not valid bidder')
         raise StopValidation(u'Not valid bidder')
 
 
 def validate_value(form, field):
     data = Fraction(field.data)
     if data <= Fraction('0') and data != -1:
-        form[field.name].errors.append(u'To low value')
         raise ValidationError(u'To low value')
 
 
@@ -48,22 +47,21 @@ def validate_bid_change_on_bidding(form, amount_npv):
     """
     stage_id = form.document['current_stage']
     if form.auction.features:
-        max_bid = form.document['stages'][stage_id]['amount_features']
-        _max = Fraction(max_bid) * Fraction(form.auction.bidders_coeficient[form.data['bidder_id']])
-        _max += Fraction(form.document['minimalStepPercentage'])
-        if amount_npv < _max:
-            errors = form.errors.get('form', [])
+        max_bid = reduce(operator.mul, map(Fraction, [
+            form.document['stages'][stage_id]['amount_features'],
+            form.auction.bidders_coeficient[form.data['bidder_id']]
+        ]))
+        if amount_npv < sum(
+                max_bid,
+                Fraction(form.document['minimalStepPercentage'])):
             message = u'Amount NPV: Too low value'
-            errors.append(message)
-            form.errors['form'] = errors
             raise ValidationError(message)
     else:
-        max_bid = form.document['stages'][stage_id]['amount']
-        if amount_npv < (Fraction(max_bid) + (Fraction(max_bid) * Fraction(form.document['minimalStepPercentage']))):
-            errors = form.errors.get('form', [])
+        max_bid = Fraction(form.document['stages'][stage_id]['amount'])
+        if amount_npv < sum([
+                max_bid,
+                max_bid * Fraction(form.document['minimalStepPercentage'])]):
             message = u'Amount NPV: Too low value'
-            errors.append(message)
-            form.errors['form'] = errors
             raise ValidationError(message)
 
 
@@ -82,13 +80,22 @@ class BidsForm(Form):
     )
     contractDuration = IntegerField(
         'contractDuration',
-        validators=[NumberRange(0, MAX_CONTRACT_DURATION, 'contractDuration must be between %(min)s and %(max)s.')]
+        validators=[
+            NumberRange(
+                0,
+                MAX_CONTRACT_DURATION,
+                'contractDuration must be between %(min)s and %(max)s.'
+            )]
     )
     contractDurationDays = IntegerField(
         'contractDurationDays',
         validators=[
             validate_contract_duration,
-            NumberRange(0, DAYS_IN_YEAR-1, 'contractDurationDays must be between %(min)s and %(max)s.')
+            NumberRange(
+                0,
+                DAYS_IN_YEAR-1,
+                'contractDurationDays must be between %(min)s and %(max)s.'
+            )
         ]
     )
 
@@ -99,7 +106,6 @@ class BidsForm(Form):
 
     def validate(self):
         if super(BidsForm, self).validate():
-            # TODO: use default contractDurationDays if not provided
             try:
                 if self.yearlyPaymentsPercentage.data == -1:
                     return -1
@@ -111,12 +117,11 @@ class BidsForm(Form):
                     self.errors['form'] = errors
                     raise ValidationError(message)
                 nbu_rate = self.auction.auction_document['NBUdiscountRate']
-                annual_costs_reduction = 0
-                for bid in self.document['initial_bids']:
-                    if bid['bidder_id'] == self.bidder_id.data:
-                        annual_costs_reduction = bid['annualCostsReduction']
-                        break
-
+                annual_costs_reduction = [
+                    bid['annualCostsReduction']
+                    for bid in self.document['initial_bids']
+                    if bid['bidder_id'] == self.bidder_id.data
+                ][0]
                 amount = npv(self.contractDuration.data,    
                              self.contractDurationDays.data,
                              self.yearlyPaymentsPercentage.data,
@@ -127,21 +132,19 @@ class BidsForm(Form):
                 if self.document['stages'][stage_id]['type'] == 'bids':
                     validate_bid_change_on_bidding(self, amount)
                 else:
-                    errors = self.errors.get('form', [])
                     message = u'Stage not for bidding'
-                    errors.append(message)
-                    self.errors['form'] = errors
                     raise ValidationError(message)
                 return amount
-            except ValidationError as e:
+            except ValidationError:
                 return False
         return False
 
 
 def form_handler():
     auction = app.config['auction']
+    raw_data = {field: str(data) for field, data in request.json.items()}
     with auction.bids_actions:
-        form = app.bids_form.from_json(request.json)
+        form = app.bids_form.from_json(raw_data)
         form.auction = auction
         form.document = auction.db.get(auction.auction_doc_id)
         current_time = datetime.now(timezone('Europe/Kiev'))
