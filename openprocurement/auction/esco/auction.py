@@ -38,7 +38,7 @@ from openprocurement.auction.esco.utils import (
     prepare_initial_bid_stage,
     prepare_results_stage,
     sorting_start_bids_by_amount,
-    dumps
+    dumps, loads
 )
 
 from openprocurement.auction.utils import\
@@ -52,7 +52,8 @@ SCHEDULER = GeventScheduler(job_defaults={"misfire_grace_time": 100},
 SCHEDULER.timezone = TIMEZONE
 
 
-use(encode=dumps, decode=json.loads)
+use(encode=dumps, decode=loads)
+
 
 class Auction(ESCODBServiceMixin,
               RequestIDServiceMixin,
@@ -295,10 +296,10 @@ class Auction(ESCODBServiceMixin,
             self.auction_document["results"].append(prepare_results_stage(**item))
         self.auction_document["current_stage"] = (len(self.auction_document["stages"]) - 1)
         LOGGER.debug(' '.join((
-            'Document in end_stage: \n', yaml_dump(dict(self.auction_document))
+            'Document in end_stage: \n', yaml_dump(json.loads(dumps(self.auction_document)))
         )), extra={"JOURNAL_REQUEST_ID": self.request_id})
         self.approve_audit_info_on_announcement()
-        LOGGER.info('Audit data: \n {}'.format(yaml_dump(self.audit)), extra={"JOURNAL_REQUEST_ID": self.request_id})
+        LOGGER.info('Audit data: \n {}'.format(yaml_dump(json.loads(dumps(self.audit)))), extra={"JOURNAL_REQUEST_ID": self.request_id})
         if self.debug:
             LOGGER.debug(
                 'Debug: put_auction_data disabled !!!',

@@ -1,10 +1,11 @@
 import logging
+import json
 from datetime import datetime, timedelta
 from copy import deepcopy
 from dateutil.tz import tzlocal
 from barbecue import cooking
 from fractions import Fraction
-
+from couchdb.http import HTTPError, RETRYABLE_ERRORS
 
 from openprocurement.auction.utils import\
     get_latest_bid_for_bidder, sorting_by_amount
@@ -15,12 +16,20 @@ from openprocurement.auction.worker.journal import (
     AUCTION_WORKER_API_AUCTION_RESULT_NOT_APPROVED,
     AUCTION_WORKER_SERVICE_END_BID_STAGE,
     AUCTION_WORKER_SERVICE_START_STAGE,
-    AUCTION_WORKER_BIDS_LATEST_BID_CANCELLATION
+    AUCTION_WORKER_BIDS_LATEST_BID_CANCELLATION,
+    AUCTION_WORKER_DB_GET_DOC,
+    AUCTION_WORKER_DB_GET_DOC_ERROR,
+    AUCTION_WORKER_DB_GET_DOC_UNHANDLED_ERROR,
+    AUCTION_WORKER_DB_SAVE_DOC,
+    AUCTION_WORKER_DB_SAVE_DOC_ERROR,
+    AUCTION_WORKER_DB_SAVE_DOC_UNHANDLED_ERROR,
+
 )
 from openprocurement.auction.esco.constants import BIDS_KEYS_FOR_COPY
 from openprocurement.auction.esco.auctions import simple, multilot
 from openprocurement.auction.esco.utils import (
-    prepare_initial_bid_stage, prepare_bids_stage, prepare_results_stage, sorting_start_bids_by_amount
+    prepare_initial_bid_stage, prepare_bids_stage,
+    prepare_results_stage, sorting_start_bids_by_amount, dumps
 )
 from openprocurement.auction.worker.mixins import DBServiceMixin,\
     PostAuctionServiceMixin, StagesServiceMixin, BiddersServiceMixin, \
@@ -79,6 +88,67 @@ class ESCODBServiceMixin(DBServiceMixin):
         self.save_auction_document()
         if not self.debug:
             self.set_auction_and_participation_urls()
+
+    def get_auction_document(self, force=False):
+        retries = self.retries
+        while retries:
+            try:
+                public_document = self.db.get(self.auction_doc_id)
+                if public_document:
+                    LOGGER.info("Get auction document {0[_id]} with rev {0[_rev]}".format(public_document),
+                                extra={"JOURNAL_REQUEST_ID": self.request_id,
+                                       "MESSAGE_ID": AUCTION_WORKER_DB_GET_DOC})
+                    if not hasattr(self, 'auction_document'):
+                        self.auction_document = public_document
+                    if force:
+                        return public_document
+                    elif public_document['_rev'] != self.auction_document['_rev']:
+                        LOGGER.warning("Rev error")
+                        self.auction_document["_rev"] = public_document["_rev"]
+                    LOGGER.debug(dumps(self.auction_document, indent=4))
+                return public_document
+
+            except HTTPError, e:
+                LOGGER.error("Error while get document: {}".format(e),
+                             extra={'MESSAGE_ID': AUCTION_WORKER_DB_GET_DOC_ERROR})
+            except Exception, e:
+                ecode = e.args[0]
+                if ecode in RETRYABLE_ERRORS:
+                    LOGGER.error("Error while get document: {}".format(e),
+                                 extra={'MESSAGE_ID': AUCTION_WORKER_DB_GET_DOC_ERROR})
+                else:
+                    LOGGER.critical("Unhandled error: {}".format(e),
+                                    extra={'MESSAGE_ID': AUCTION_WORKER_DB_GET_DOC_UNHANDLED_ERROR})
+            retries -= 1
+
+    def save_auction_document(self):
+        public_document = self.prepare_public_document()
+        retries = 10
+        while retries:
+            try:
+                response = self.db.save(public_document)
+                if len(response) == 2:
+                    LOGGER.info("Saved auction document {0} with rev {1}".format(*response),
+                                extra={"JOURNAL_REQUEST_ID": self.request_id,
+                                       "MESSAGE_ID": AUCTION_WORKER_DB_SAVE_DOC})
+                    self.auction_document['_rev'] = response[1]
+                    return response
+            except HTTPError, e:
+                LOGGER.error("Error while save document: {}".format(e),
+                             extra={'MESSAGE_ID': AUCTION_WORKER_DB_SAVE_DOC_ERROR})
+            except Exception, e:
+                ecode = e.args[0]
+                if ecode in RETRYABLE_ERRORS:
+                    LOGGER.error("Error while save document: {}".format(e),
+                                 extra={'MESSAGE_ID': AUCTION_WORKER_DB_SAVE_DOC_ERROR})
+                else:
+                    LOGGER.critical("Unhandled error: {}".format(e),
+                                    extra={'MESSAGE_ID': AUCTION_WORKER_DB_SAVE_DOC_UNHANDLED_ERROR})
+            if "_rev" in public_document:
+                LOGGER.debug("Retry save document changes")
+            saved_auction_document = self.get_auction_document(force=True)
+            public_document["_rev"] = saved_auction_document["_rev"]
+            retries -= 1
 
 
 class ESCOBiddersServiceMixin(BiddersServiceMixin):

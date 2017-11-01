@@ -5,6 +5,7 @@ from fractions import Fraction
 from barbecue import chef
 from decimal import Decimal
 
+
 def prepare_initial_bid_stage(bidder_name="",
                               bidder_id="",
                               time="",
@@ -114,4 +115,16 @@ class FractionEncoder(json.JSONEncoder):
             return str(obj)
         return super(FractionEncoder, self).default(obj)
 
+
+class FractionDecoder(json.JSONDecoder):
+    def default(self, obj):
+        data = super(FractionDecoder, self).decode(obj)
+        if isinstance(data, (str, unicode)) and ('/' in data):
+            try:
+                return Fraction(data)
+            except ValueError:
+                return data
+        return data
+
 dumps = partial(json.dumps, cls=FractionEncoder)
+loads = partial(json.loads, cls=FractionDecoder)
