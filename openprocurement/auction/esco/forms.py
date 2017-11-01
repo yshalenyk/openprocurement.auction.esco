@@ -30,7 +30,7 @@ def validate_value(form, field):
 def validate_yearly_payments_percentage(form, field):
     data = field.data
     yearly_payments_percentage_range = app.config['auction'].auction_document['yearlyPaymentsPercentageRange']
-    if not Fraction(yearly_payments_percentage_range) <= Fraction(data) <= Fraction(1):
+    if not (Fraction(str(yearly_payments_percentage_range)) <= Fraction(data) <= Fraction(1)):
         message = u'Percentage value must be between {} and 100'.format(yearly_payments_percentage_range*100)
         raise ValidationError(message)
 
@@ -107,14 +107,11 @@ class BidsForm(Form):
     def validate(self):
         if super(BidsForm, self).validate():
             try:
-                if self.yearlyPaymentsPercentage.data == -1:
+                if (str(self.yearlyPaymentsPercentage.data ) == "-1") and (self.contractDurationDays.data == 0) and (self.contractDuration.data == 0):
                     return -1
 
                 if self.contractDuration.data == 0 and self.contractDurationDays.data == 0:
-                    errors = self.errors.get('form', [])
                     message = u'You can\'t bid 0 days and 0 years'
-                    errors.append(message)
-                    self.errors['form'] = errors
                     raise ValidationError(message)
                 nbu_rate = self.auction.auction_document['NBUdiscountRate']
                 annual_costs_reduction = [
