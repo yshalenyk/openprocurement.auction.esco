@@ -28,30 +28,26 @@
     Page Should Contain        Ви
     Highlight Elements With Text On Time    Ви
 
-
 Поставити максимально допустиму ставку
     Wait Until Page Contains Element    id=max_bid_amount_price
     ${last_amount}=     Get Text    id=max_bid_amount_price
     Highlight Elements With Text On Time    ${last_amount}
     Поставити ставку   ${last_amount}   Заявку прийнято
 
-
 Поставити мінімально допустиму ставку
     [Arguments]  ${years}  ${days}  ${percent}
-    Wait Until Page Contains Element    id=max_bid_amount_price
     Поставити ставку еско  ${years}  ${days}  ${percent}   Заявку прийнято
 
-
 Спробувати вказати невалідну тривалість дії контракту
-    Поставити ставку еско  21  6  99   contractDuration must be between
-    Поставити ставку еско  14  365  99   contractDurationDays must be between
-    Поставити ставку еско  12   2132  99   contractDurationDays must be between
-    Поставити ставку еско  0  0  99   Maximun contract duration is
-
+    Поставити ставку еско  16  6  99  css=input:invalid
+    Поставити ставку еско  20  6  99  css=input:invalid
+    Поставити ставку еско  14  365  99   css=input:invalid
+    Поставити ставку еско  12   2132  99   css=input:invalid
+    Поставити ставку еско  45   2132  99   css=input:invalid
+    Поставити ставку еско  0  0  99   Ви не можете встановити 0 днів та 0 років
 
 Спробувати вказати невалідний відсоток щорічних платежів
-    Поставити ставку еско  2  123  79   Percentage value must be between
-
+    Поставити ставку еско  2  123  79   Percentage value must be between 80.0 and 100
 
 Поставити велику ціну в ставці
     [Arguments]    ${extra_amount}
@@ -71,8 +67,10 @@
     Capture Page Screenshot
     Highlight Elements With Text On Time    Зробити заявку
     Click Element                id=place-bid-button
-    Wait Until Page Contains     ${msg}    10s
-    Highlight Elements With Text On Time    ${msg}
+    Run Keyword If  "${msg}" == "css=input:invalid"           Wait Until Element Is Visible  ${msg}
+    ...    ELSE     Wait Until Page Contains  ${msg}  10s
+    ${current_VPN}=  Get text  id=current-npv
+    Set Global Variable   ${current_VPN}
     Capture Page Screenshot
 
 Поставити ставку
@@ -102,7 +100,5 @@
     \   Run Keyword If    '${status}' == 'PASS'    Exit For Loop
 
 Перевірити чи ставка була прийнята
-    Page Should Contain   ${USERS['${CURRENT_USER}']['last_amount']}
-    Highlight Elements With Text On Time   ${USERS['${CURRENT_USER}']['last_amount']}
-
-
+    [Arguments]    ${locator}
+  Element should contain  ${locator}  ${current_VPN}

@@ -27,7 +27,6 @@ ${BROWSER}      chrome
     \   Залогуватись користувачем   ${user_id}
     \   Перевірити інформацію з меню
 
-
 Перевірити інформацію з меню
     sleep                      1s
     Click Element              id=menu_button
@@ -44,18 +43,15 @@ ${BROWSER}      chrome
     Press Key                  xpath=/html/body/div/div[1]/div/div[1]/div[1]/button     \\27
     sleep                      1s
 
-
 Дочекатись паузи перед ${round_id} раундом
     Wait Until Page Contains    → ${round_id}    5 min
 
 Дочекатись завершення паузи перед ${round_id} раундом
     Wait Until Page Does Not Contain    → ${round_id}    5 min
 
-
 Дочекатись учасником початку стадії ставок
     [Arguments]    ${timeout}=2 min
     Wait Until Page Contains        до закінчення вашої черги   ${timeout}
-
 
 Дочекатись учасником закінчення стадії ставок
     [Arguments]    ${timeout}=2 min
@@ -65,10 +61,6 @@ ${BROWSER}      chrome
     [Arguments]    ${timeout}=5 min
     Wait Until Page Does Not Contain   Очікуємо на розкриття імен учасників.  ${timeout}
     Wait Until Page Contains      Аукціон завершився   ${timeout}
-
-Дочекатись до завершення аукціону без розкриття імен учасників
-    [Arguments]    ${timeout}=10 min
-    Wait Until Page Contains      Очікуємо на розкриття імен учасників.  ${timeout}
 
 Перевірити інформацію про тендер
     Page Should Contain   ${TENDER['title']}                    # tender title
