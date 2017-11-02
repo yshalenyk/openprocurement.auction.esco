@@ -21,4 +21,4 @@ install:
   - bin/buildout -N
   - curl -X PUT 0.0.0.0:5984/auctions
 script:
-  - bin/pytest openprocurement/auction/esco/tests -v
+  - bin/pytest openprocurement/auction/esco/tests/unit -v
