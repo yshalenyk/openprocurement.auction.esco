@@ -57,9 +57,7 @@ def validate_bid_change_on_bidding(form, amount_npv):
             form.document['stages'][stage_id]['amount_features'],
             form.auction.bidders_coeficient[form.data['bidder_id']]
         ]))
-        if amount_npv < sum(
-                max_bid,
-                Fraction(form.document['minimalStepPercentage'])):
+        if amount_npv < max_bid + Fraction(form.document['minimalStepPercentage']):
             message = u'Amount NPV: Too low value'
             append_error_to_form(form, message)
             raise ValidationError(message)
