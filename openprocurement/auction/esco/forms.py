@@ -14,16 +14,22 @@ from openprocurement.auction.esco.constants import DAYS_IN_YEAR, MAX_CONTRACT_DU
 from openprocurement.auction.utils import prepare_extra_journal_fields
 from esculator import npv
 
+def append_error_to_form(form, message):
+    errors = form.errors.get('form', [])
+    errors.append(message)
+    form.errors['form'] = errors
 
 def validate_bidder_id_on_bidding(form, field):
     stage_id = form.document['current_stage']
     if field.data != form.document['stages'][stage_id]['bidder_id']:
+        form[field.name].errors.append(u'Not valid bidder')
         raise StopValidation(u'Not valid bidder')
 
 
 def validate_value(form, field):
     data = Fraction(field.data)
     if data <= Fraction('0') and data != -1:
+        form[field.name].errors.append(u'To low value')
         raise ValidationError(u'To low value')
 
 
@@ -55,6 +61,7 @@ def validate_bid_change_on_bidding(form, amount_npv):
                 max_bid,
                 Fraction(form.document['minimalStepPercentage'])):
             message = u'Amount NPV: Too low value'
+            append_error_to_form(form, message)
             raise ValidationError(message)
     else:
         max_bid = Fraction(form.document['stages'][stage_id]['amount'])
@@ -62,6 +69,7 @@ def validate_bid_change_on_bidding(form, amount_npv):
                 max_bid,
                 max_bid * Fraction(form.document['minimalStepPercentage'])]):
             message = u'Amount NPV: Too low value'
+            append_error_to_form(form, message)
             raise ValidationError(message)
 
 
@@ -112,6 +120,7 @@ class BidsForm(Form):
 
                 if self.contractDuration.data == 0 and self.contractDurationDays.data == 0:
                     message = u'You can\'t bid 0 days and 0 years'
+                    append_error_to_form(self, message)
                     raise ValidationError(message)
                 nbu_rate = self.auction.auction_document['NBUdiscountRate']
                 annual_costs_reduction = [
@@ -130,6 +139,7 @@ class BidsForm(Form):
                     validate_bid_change_on_bidding(self, amount)
                 else:
                     message = u'Stage not for bidding'
+                    append_error_to_form(self, message)
                     raise ValidationError(message)
                 return amount
             except ValidationError:
