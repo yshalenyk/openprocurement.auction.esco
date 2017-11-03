@@ -201,7 +201,7 @@ class Auction(ESCODBServiceMixin,
             audit_info = {
                 "bidder": bid["id"],
                 "date": bid["date"],
-                "amount": amount,
+                "amount": str(amount),
                 "contractDuration": {
                     "years": bid["value"]["contractDuration"]["years"],
                     "days": bid["value"]["contractDuration"]["days"],
