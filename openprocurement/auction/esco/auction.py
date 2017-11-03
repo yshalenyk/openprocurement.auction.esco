@@ -197,7 +197,7 @@ class Auction(ESCODBServiceMixin,
         self.auction_document["initial_bids"] = []
         bids_info = sorting_start_bids_by_amount(bids, features=self.features)
         for index, bid in enumerate(bids_info):
-            amount = Fraction(bid["value"]["amountPerformance"])
+            amount = str(Fraction(bid["value"]["amountPerformance"]))
             audit_info = {
                 "bidder": bid["id"],
                 "date": bid["date"],

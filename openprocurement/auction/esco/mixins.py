@@ -185,6 +185,7 @@ class ESCOBiddersServiceMixin(BiddersServiceMixin):
                 return False
             bid_info = {key: bid_info[key] for key in BIDS_KEYS_FOR_COPY}
             bid_info["bidder_name"] = self.mapping[bid_info['bidder_id']]
+            bid_info['amount'] = str(bid_info['amount'])
             if self.features:
                 bid_info['amount_features'] = str(Fraction(bid_info['amount']) * self.bidders_coeficient[bid_info['bidder_id']])
             self.auction_document["stages"][self.current_stage] = prepare_bids_stage(
@@ -196,6 +197,7 @@ class ESCOBiddersServiceMixin(BiddersServiceMixin):
             return True
         else:
             return False
+
 
 class EscoPostAuctionMixin(PostAuctionServiceMixin):
 
@@ -459,7 +461,7 @@ class EscoAuditServiceMixin(AuditServiceMixin):
         for bid in self.auction_document['results']:
             bid_result_audit = {
                 'bidder': bid['bidder_id'],
-                'amount': bid['amount'],
+                'amount': str(bid['amount']),
                 "contractDuration": {
                     "years": bid["contractDurationYears"],
                     "days": bid["contractDurationDays"]
@@ -470,3 +472,27 @@ class EscoAuditServiceMixin(AuditServiceMixin):
             if approved:
                 bid_result_audit["identification"] = approved[bid['bidder_id']]
             self.audit['timeline']['results']['bids'].append(bid_result_audit)
+
+    def approve_audit_info_on_bid_stage(self):
+        turn_in_round = self.current_stage - (
+            self.current_round * (self.bidders_count + 1) - self.bidders_count
+        ) + 1
+        round_label = 'round_{}'.format(self.current_round)
+        turn_label = 'turn_{}'.format(turn_in_round)
+        self.audit['timeline'][round_label][turn_label] = {
+            'time': datetime.now(tzlocal()).isoformat(),
+            'bidder': self.auction_document["stages"][self.current_stage].get('bidder_id', '')
+        }
+        if self.auction_document["stages"][self.current_stage].get('changed', False):
+            self.audit['timeline'][round_label][turn_label]["bid_time"] = self.auction_document["stages"][self.current_stage]['time']
+            self.audit['timeline'][round_label][turn_label]["amount"] = str(self.auction_document["stages"][self.current_stage]['amount'])
+            self.audit['timeline'][round_label][turn_label]["contractDurationYears"] = self.auction_document["stages"][self.current_stage]['contractDurationYears']
+            self.audit['timeline'][round_label][turn_label]["contractDurationDays"] = self.auction_document["stages"][self.current_stage]['contractDurationDays']
+            self.audit['timeline'][round_label][turn_label]["yearlyPaymentsPercentage"] = self.auction_document["stages"][self.current_stage]['yearlyPaymentsPercentage']
+            if self.features:
+                self.audit['timeline'][round_label][turn_label]["amount_features"] = str(
+                    self.auction_document["stages"][self.current_stage].get("amount_features")
+                )
+                self.audit['timeline'][round_label][turn_label]["coeficient"] = str(
+                    self.auction_document["stages"][self.current_stage].get("coeficient")
+                )
