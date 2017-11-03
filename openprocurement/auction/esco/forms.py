@@ -14,10 +14,12 @@ from openprocurement.auction.esco.constants import DAYS_IN_YEAR, MAX_CONTRACT_DU
 from openprocurement.auction.utils import prepare_extra_journal_fields
 from esculator import npv
 
+
 def append_error_to_form(form, message):
     errors = form.errors.get('form', [])
     errors.append(message)
     form.errors['form'] = errors
+
 
 def validate_bidder_id_on_bidding(form, field):
     stage_id = form.document['current_stage']
@@ -28,7 +30,7 @@ def validate_bidder_id_on_bidding(form, field):
 
 def validate_value(form, field):
     data = Fraction(field.data)
-    if data <= Fraction('0') and data != -1:
+    if data <= Fraction('0') and str(data )!= '-0.01':
         form[field.name].errors.append(u'To low value')
         raise ValidationError(u'To low value')
 
@@ -36,9 +38,10 @@ def validate_value(form, field):
 def validate_yearly_payments_percentage(form, field):
     data = field.data
     yearly_payments_percentage_range = app.config['auction'].auction_document['yearlyPaymentsPercentageRange']
-    if not (Fraction(str(yearly_payments_percentage_range)) <= Fraction(data) <= Fraction(1)):
-        message = u'Percentage value must be between {} and 100'.format(yearly_payments_percentage_range*100)
-        raise ValidationError(message)
+    if str(data) != '-0.01':
+        if not (Fraction(str(yearly_payments_percentage_range)) <= Fraction(data) <= Fraction(1)):
+            message = u'Percentage value must be between {} and 100'.format(yearly_payments_percentage_range*100)
+            raise ValidationError(message)
 
 
 def validate_contract_duration(form, field):
@@ -164,7 +167,7 @@ def form_handler():
                 'yearlyPaymentsPercentage': float(form.data['yearlyPaymentsPercentage']),
                 'time': current_time.isoformat()
             })
-            if form.data['yearlyPaymentsPercentage']:
+            if total_amount == -1:
                 app.logger.info(
                     "Bidder {} with client_id {} canceled bids in "
                     "stage {} in {}".format(form.data['bidder_id'],
@@ -174,10 +177,22 @@ def form_handler():
                     extra=prepare_extra_journal_fields(request.headers)
                 )
             else:
-                app.logger.info("Bidder {} with client_id {} placed bid {} in {}".format(
-                    form.data['bidder_id'], session['client_id'],
-                    form.data['bid'], current_time.isoformat()
-                ), extra=prepare_extra_journal_fields(request.headers))
+                app.logger.info(
+                        "Bidder {bidder_id} with client_id {client_id} placed bid with "
+                        "total amount {amount}, "
+                        "yearly payments percentage = {yearlyPaymentsPercentage}, "
+                        "contract duraction years = {contractDurationYears}, "
+                        "contract duration days = {contractDurationDays} "
+                        "in {time}".format(**dict(
+                            bidder_id=form.data['bidder_id'],
+                            client_id=session['client_id'],
+                            time=current_time.isoformat(),
+                            amount=total_amount,
+                            yearlyPaymentsPercentage=form.data.get('yearlyPaymentsPercentage'),
+                            contractDurationYears=form.data.get('contractDuration'),
+                            contractDurationDays=form.data.get('contractDurationDays')
+                            )),
+                        extra=prepare_extra_journal_fields(request.headers))
             return {'status': 'ok', 'data': form.data}
         else:
             app.logger.info("Bidder {} with client_id {} wants place bid {} in {} with errors {}".format(
