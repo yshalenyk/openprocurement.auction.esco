@@ -461,7 +461,7 @@ class EscoAuditServiceMixin(AuditServiceMixin):
         for bid in self.auction_document['results']:
             bid_result_audit = {
                 'bidder': bid['bidder_id'],
-                'amount': bid['amount'],
+                'amount': str(bid['amount']),
                 "contractDuration": {
                     "years": bid["contractDurationYears"],
                     "days": bid["contractDurationDays"]
