@@ -2,7 +2,7 @@
 import pytest
 
 from datetime import datetime
-
+from fractions import Fraction
 
 @pytest.mark.parametrize(
     'input, expected', [
@@ -12,7 +12,7 @@ from datetime import datetime
                     {
                         'bidder_id': '5675acc9232942e8940a034994ad883e',
                         'time': '2017-09-19T08:22:24.038426+00:00',
-                        'amount': 9023.638356164383,
+                        'amount': Fraction(9023.638356164383),
                         'contractDurationYears': 12,
                         'contractDurationDays': 256,
                         'yearlyPaymentsPercentage': 0.65,
@@ -20,7 +20,7 @@ from datetime import datetime
                     {
                         'bidder_id': 'd3ba84c66c9e4f34bfb33cc3c686f137',
                         'time': '2017-09-19T08:25:24.038426+00:00',
-                        'amount': 8567.638356164383,
+                        'amount': Fraction(8567.638356164383),
                         'contractDurationYears': 10,
                         'contractDurationDays': 186,
                         'yearlyPaymentsPercentage': 0.80,
@@ -31,13 +31,13 @@ from datetime import datetime
             },
             {'timeline': {
                 'results': {'bids': [
-                    {'amount': 9023.638356164383,
+                    {'amount': '4960797648724125/549755813888',
                      'bidder': '5675acc9232942e8940a034994ad883e',
                      'contractDuration': {'days': 256,
                                           'years': 12},
                      'time': '2017-09-19T08:22:24.038426+00:00',
                      'yearlyPaymentsPercentage': 0.65},
-                    {'amount': 8567.638356164383,
+                    {'amount': '4710108997591197/549755813888',
                      'bidder': 'd3ba84c66c9e4f34bfb33cc3c686f137',
                      'contractDuration': {'days': 186,
                                           'years': 10},
@@ -54,7 +54,7 @@ from datetime import datetime
                     {
                         'bidder_id': '5675acc9232942e8940a034994ad883e',
                         'time': '2017-09-19T08:22:24.038426+00:00',
-                        'amount': 9023.638356164383,
+                        'amount': Fraction(9023.638356164383),
                         'contractDurationYears': 12,
                         'contractDurationDays': 256,
                         'yearlyPaymentsPercentage': 0.65,
@@ -62,7 +62,7 @@ from datetime import datetime
                     {
                         'bidder_id': 'd3ba84c66c9e4f34bfb33cc3c686f137',
                         'time': '2017-09-19T08:25:24.038426+00:00',
-                        'amount': 8567.638356164383,
+                        'amount': Fraction(8567.638356164383),
                         'contractDurationYears': 10,
                         'contractDurationDays': 186,
                         'yearlyPaymentsPercentage': 0.80,
@@ -76,14 +76,14 @@ from datetime import datetime
             },
             {'timeline': {
                 'results': {'bids': [
-                    {'amount': 9023.638356164383,
+                    {'amount': '4960797648724125/549755813888',
                      'identification': 'info from approved dict',
                      'bidder': '5675acc9232942e8940a034994ad883e',
                      'contractDuration': {'days': 256,
                                           'years': 12},
                      'time': '2017-09-19T08:22:24.038426+00:00',
                      'yearlyPaymentsPercentage': 0.65},
-                    {'amount': 8567.638356164383,
+                    {'amount': '4710108997591197/549755813888',
                      'identification': 'info from approved dict',
                      'bidder': 'd3ba84c66c9e4f34bfb33cc3c686f137',
                      'contractDuration': {'days': 186,
