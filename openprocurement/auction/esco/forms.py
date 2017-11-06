@@ -116,7 +116,7 @@ class BidsForm(Form):
     def validate(self):
         if super(BidsForm, self).validate():
             try:
-                if (str(self.yearlyPaymentsPercentage.data ) == "-1") and (self.contractDurationDays.data == 0) and (self.contractDuration.data == 0):
+                if (str(self.yearlyPaymentsPercentage.data) == "-0.01") and (self.contractDurationDays.data == 0) and (self.contractDuration.data == 0):
                     return -1
 
                 if self.contractDuration.data == 0 and self.contractDurationDays.data == 0:
