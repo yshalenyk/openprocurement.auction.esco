@@ -102,3 +102,8 @@
 Перевірити чи ставка була прийнята
     [Arguments]    ${locator}
   Element should contain  ${locator}  ${current_VPN}
+
+Перевірити чи ставка була відмінена
+    [Arguments]    ${locator}
+  ${amount}=  Get text  ${round2_bidder2}
+  Element should contain  ${locator}  ${amount}
