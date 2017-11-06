@@ -176,7 +176,7 @@ class ESCOBiddersServiceMixin(BiddersServiceMixin):
                 self._bids_data[self.current_stage],
                 self.auction_document["stages"][self.current_stage]['bidder_id']
             )
-            if bid_info['amount'] == -1.0:
+            if bid_info['yearlyPaymentsPercentage'] == -0.01:
                 LOGGER.info(
                     "Latest bid is bid cancellation: {}".format(bid_info),
                     extra={"JOURNAL_REQUEST_ID": self.request_id,
