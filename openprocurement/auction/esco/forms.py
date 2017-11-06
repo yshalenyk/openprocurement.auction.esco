@@ -9,7 +9,6 @@ from wtforms.validators import InputRequired, ValidationError, StopValidation, N
 from wtforms_json import init; init()
 from dateutil import parser
 
-from openprocurement.auction.esco.utils import to_decimal
 from openprocurement.auction.esco.constants import DAYS_IN_YEAR, MAX_CONTRACT_DURATION
 from openprocurement.auction.utils import prepare_extra_journal_fields
 from esculator import npv
@@ -116,7 +115,7 @@ class BidsForm(Form):
     def validate(self):
         if super(BidsForm, self).validate():
             try:
-                if (str(self.yearlyPaymentsPercentage.data) == "-0.01") and (self.contractDurationDays.data == 0) and (self.contractDuration.data == 0):
+                if str(self.yearlyPaymentsPercentage.data) == "-0.01":
                     return -1
 
                 if self.contractDuration.data == 0 and self.contractDurationDays.data == 0:
