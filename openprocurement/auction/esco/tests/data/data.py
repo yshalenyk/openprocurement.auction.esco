@@ -1,4 +1,11 @@
 # -*- coding: utf-8 -*-
+
+ESCO_TENDER_ID = '2' * 32
+ESCO_TENDER_MULTILOT_ID = '3' * 32
+ESCO_MEAT_TENDER_ID = '4' * 32
+ESCO_MEAT_MULTILOT_TENDER_ID = '5' * 32
+
+
 tender_data = {u'data': {u'NBUdiscountRate': 0.22,
                          u'auctionPeriod': {u'endDate': None,
                                             u'startDate': u'2017-10-03T11:17:21.076354+03:00'},
