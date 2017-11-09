@@ -66,7 +66,7 @@ class Auction(ESCODBServiceMixin,
     """ESCO Auction Worker Class"""
 
     def __init__(self, tender_id,
-                 worker_defaults={},
+                 worker_defaults,
                  auction_data={},
                  lot_id=None):
         self.generate_request_id()

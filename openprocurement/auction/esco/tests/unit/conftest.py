@@ -12,7 +12,6 @@ from StringIO import StringIO
 from openprocurement.auction.esco.auction import Auction, SCHEDULER
 from openprocurement.auction.esco.forms import BidsForm
 from openprocurement.auction.esco.mixins import LOGGER
-from openprocurement.auction.worker.mixins import LOGGER as WORKER_LOGGER
 from openprocurement.auction.esco.tests.data.data import (
     tender_data, lot_tender_data, features_tender_data
 )
@@ -27,7 +26,6 @@ def update_auctionPeriod(data):
     data['data']['auctionPeriod']['startDate'] = new_start_time
 
 
-PWD = os.path.dirname(os.path.realpath(__file__))
 worker_defaults_file_path = os.path.join(
     os.getcwd(),
     "openprocurement/auction/esco/tests/data/auction_worker_esco.yaml")
