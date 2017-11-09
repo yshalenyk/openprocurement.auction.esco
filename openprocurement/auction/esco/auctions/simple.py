@@ -35,6 +35,7 @@ def prepare_auction_document(self):
          "procuringEntity": self._auction_data["data"].get("procuringEntity", {}),
          "items": self._auction_data["data"].get("items", []),
          "minValue": self._auction_data["data"].get("minValue", {}),
+         "fundingKind": self._auction_data["data"].get("fundingKind", {}),
          "yearlyPaymentsPercentageRange": self._auction_data["data"].get("yearlyPaymentsPercentageRange")}
     )
     if self.features:
