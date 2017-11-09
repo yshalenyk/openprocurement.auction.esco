@@ -185,9 +185,9 @@ class ESCOBiddersServiceMixin(BiddersServiceMixin):
                 return False
             bid_info = {key: bid_info[key] for key in BIDS_KEYS_FOR_COPY}
             bid_info["bidder_name"] = self.mapping[bid_info['bidder_id']]
-            bid_info['amount'] = str(bid_info['amount'])
+            bid_info['amount'] = bid_info['amount']
             if self.features:
-                bid_info['amount_features'] = str(Fraction(bid_info['amount']) * self.bidders_coeficient[bid_info['bidder_id']])
+                bid_info['amount_features'] = Fraction(bid_info['amount']) * self.bidders_coeficient[bid_info['bidder_id']]
             self.auction_document["stages"][self.current_stage] = prepare_bids_stage(
                 self.auction_document["stages"][self.current_stage],
                 bid_info
