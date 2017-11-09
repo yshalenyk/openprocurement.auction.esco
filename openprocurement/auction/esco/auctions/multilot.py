@@ -35,6 +35,7 @@ def prepare_auction_document(self):
          'items': self._lot_data.get('items', []),
          'minValue': self._lot_data.get('value', {}),
          'lot': {},
+         "fundingKind": self._auction_data["data"].get("fundingKind", {}),
          "yearlyPaymentsPercentageRange": self._auction_data["data"].get("yearlyPaymentsPercentageRange")}
     )
     self.auction_document['auction_type'] = 'meat' if self.features else 'default'

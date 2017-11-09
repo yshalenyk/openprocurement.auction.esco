@@ -36,11 +36,17 @@ def validate_value(form, field):
 
 def validate_yearly_payments_percentage(form, field):
     data = field.data
-    yearly_payments_percentage_range = app.config['auction'].auction_document['yearlyPaymentsPercentageRange']
+    kind = app.config['auction'].auction_document.get('fundingKind', '')
     if str(data) != '-0.01':
-        if not (Fraction(str(yearly_payments_percentage_range)) <= Fraction(data) <= Fraction(1)):
-            message = u'Percentage value must be between {} and 100'.format(yearly_payments_percentage_range*100)
-            raise ValidationError(message)
+        if kind == "other":
+            if not (Fraction("0.8") <= Fraction(str(data)) <= Fraction("1")):
+                message = u'Percentage value must be between 80 and 100'
+                raise ValidationError(message)
+        elif kind == 'budget':
+            yearly_payments_percentage_range = app.config['auction'].auction_document['yearlyPaymentsPercentageRange']
+            if not (Fraction('0') <= Fraction(data) <= Fraction(str(yearly_payments_percentage_range))):
+                message = u'Percentage value must be between 0 and {}'.format(yearly_payments_percentage_range*100)
+                raise ValidationError(message)
 
 
 def validate_contract_duration(form, field):

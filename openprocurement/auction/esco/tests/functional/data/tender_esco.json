@@ -16,6 +16,7 @@
     "title": "Послуги шкільних їдалень",
     "tenderID": "UA-11111",
     "minimalStepPercentage": 0.006,
+    "fundingKind": "other",
     "auctionPeriod": {
       "startDate": "2017-10-03T11:17:21.076354+03:00",
       "endDate": null
