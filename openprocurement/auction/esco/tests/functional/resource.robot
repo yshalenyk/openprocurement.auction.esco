@@ -34,7 +34,7 @@ ${BROWSER}      phantomjs
     Highlight Elements With Text On Time    Browser ID
     Wait Until Page Contains   Session ID
     Highlight Elements With Text On Time    Session ID
-    Wait Until Page Contains   Крок зменшення торгів
+    Wait Until Page Contains   Крок збільшення торгів
     ${persentage}=  Get Text    xpath=(//strong[@class='ng-binding'])
     ${minimalStepPercentage}=  convert_amount_to_number  ${persentage}
     Should Be Equal  ${minimalStepPercentage}  ${TENDER['minimalStepPercentage']}
