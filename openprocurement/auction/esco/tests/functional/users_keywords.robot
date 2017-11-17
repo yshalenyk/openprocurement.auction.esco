@@ -60,9 +60,9 @@
 
 Поставити ставку еско
     [Arguments]  ${years}  ${days}  ${percent}  ${msg}
-    Input Text  id=contract-duration-years-input  ${years}
-    Input Text  id=contract-duration-days-input  ${days}
-    Input Text  id=yearly-payments-percentage  ${percent}
+    Input Text  id=contractDurationYears  ${years}
+    Input Text  id=contractDurationDays  ${days}
+    Input Text  id=yearlyPaymentsPercentage  ${percent}
     sleep  1s
     Capture Page Screenshot
     Highlight Elements With Text On Time    Зробити заявку
