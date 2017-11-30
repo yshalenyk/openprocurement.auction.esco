@@ -266,8 +266,8 @@ class EscoStagesMixin(StagesServiceMixin):
                 amount_features=amount_features,
                 annualCostsReduction=annualCostsReduction,
                 yearlyPaymentsPercentage=bid["value"]["yearlyPaymentsPercentage"],
-                contractDurationDays=bid["value"]["contractDurationDays"],
-                contractDurationYears=bid["value"]["contractDurationYears"]
+                contractDurationDays=bid["value"]["contractDuration"].get("days", None),
+                contractDurationYears=bid["value"]["contractDuration"].get("years", None)
             )
             self.auction_document["initial_bids"].append(
                 initial_bid_stage
