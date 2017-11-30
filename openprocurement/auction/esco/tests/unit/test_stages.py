@@ -17,16 +17,14 @@ def test_prepare_auction_stages_fast_forward_no_features(auction, mocker):
         {'date': u'2017-09-19T08:22:21.726234+00:00', 'id': u'd3ba84c66c9e4f34bfb33cc3c686f137', 'value': {
             u'yearlyPaymentsPercentage': 0.85, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
             u'amount': 9752.643835616438,
-            u'contractDurationDays': 200,
-            u'contractDurationYears': 12,
+            u'contractDuration': {'years': 12, 'days': 200},
             u'amountPerformance': 850.1281928765416,
             u'annualCostsReduction': [400.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0,
                                       900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0]}},
         {'date': u'2017-09-19T08:22:24.038426+00:00', 'id': u'5675acc9232942e8940a034994ad883e', 'value': {
             u'yearlyPaymentsPercentage': 0.86, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
             u'amount': 9023.638356164383,
-            u'contractDurationDays': 40,
-            u'contractDurationYears': 13,
+            u'contractDuration': {'years': 13, 'days': 40},
             u'amountPerformance': 672.4650719957199,
             u'annualCostsReduction': [200.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0,
                                       800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0]}}]
@@ -101,7 +99,6 @@ def test_prepare_auction_stages_fast_forward_no_features(auction, mocker):
     mocker.spy(mixins, 'prepare_service_stage')
     mocker.spy(mixins, 'prepare_bids_stage')
     mocker.spy(auction, 'update_future_bidding_orders')
-    # import pdb; pdb.set_trace()
     auction.prepare_auction_stages_fast_forward()
 
     assert auction.auction_document['auction_type'] == 'default'
@@ -143,16 +140,14 @@ def test_prepare_auction_stages_fast_forward_features(features_auction, db, mock
         {'date': u'2017-09-19T08:22:21.726234+00:00', 'id': u'd3ba84c66c9e4f34bfb33cc3c686f137', 'value': {
             u'yearlyPaymentsPercentage': 0.85, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
             u'amount': 9752.643835616438,
-            u'contractDurationDays': 200,
-            u'contractDurationYears': 12,
+            u'contractDuration': {'years': 12, 'days': 200},
             u'amountPerformance': 850.1281928765416,
             u'annualCostsReduction': [400.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0,
                                       900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0, 900.0]}},
         {'date': u'2017-09-19T08:22:24.038426+00:00', 'id': u'5675acc9232942e8940a034994ad883e', 'value': {
             u'yearlyPaymentsPercentage': 0.86, u'valueAddedTaxIncluded': True, u'currency': u'UAH',
             u'amount': 9023.638356164383,
-            u'contractDurationDays': 40,
-            u'contractDurationYears': 13,
+            u'contractDuration': {'years': 13, 'days': 40},
             u'amountPerformance': 672.4650719957199,
             u'annualCostsReduction': [200.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0,
                                       800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0, 800.0]}}]
