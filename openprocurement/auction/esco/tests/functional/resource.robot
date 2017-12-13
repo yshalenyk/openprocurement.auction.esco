@@ -7,7 +7,6 @@ Library        openprocurement.auction.esco.tests.functional.service_keywords
 
 *** Variables ***
 ${USERS}
-${BROWSER}      phantomjs
 
 *** Keywords ***
 Підготовка тесту

@@ -12,19 +12,15 @@ PWD = os.path.dirname(os.path.realpath(__file__))
 CWD = os.getcwd()
 
 
-def run_esco(tender_file_path, auction_id):
+def run_esco(worker_cmd, tender_file_path, auction_id):
     with update_auctionPeriod(tender_file_path, auction_type='simple')\
             as auction_file:
-        check_output(
-                '{0}/bin/auction_esco planning {1}'
-                ' {0}/etc/auction_worker_esco.yaml'
-                ' --planning_procerude partial_db --auction_info {2}'
-                .format(CWD, auction_id, auction_file).split())
-    sleep(5)
+        check_output(worker_cmd.format(CWD, auction_id, auction_file).split())
+    sleep(2)
 
 
-def includeme(tests):
-    tests['esco'] = {
+def includeme():
+    return {'esco': {
         'worker_cmd': '{0}/bin/auction_esco planning {1}'
                       ' {0}/etc/auction_worker_esco.yaml'
                       ' --planning_procerude partial_db --auction_info {2}',
@@ -32,5 +28,5 @@ def includeme(tests):
         'tender_file_path': '{0}/data/tender_esco.json'.format(PWD),
         'auction_id': ESCO_TENDER_ID,
         'auction_worker_defaults': 'auction_worker_defaults:{0}/etc/auction_worker_esco.yaml',
-        'suite': PWD
+        'suite': PWD}
     }
