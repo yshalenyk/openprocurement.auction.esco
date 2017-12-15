@@ -16,7 +16,7 @@ def run_esco(worker_cmd, tender_file_path, auction_id):
     with update_auctionPeriod(tender_file_path, auction_type='simple')\
             as auction_file:
         check_output(worker_cmd.format(CWD, auction_id, auction_file).split())
-    sleep(2)
+    sleep(10)
 
 
 def includeme():
