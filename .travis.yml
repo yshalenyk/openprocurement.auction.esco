@@ -22,3 +22,5 @@ install:
   - curl -X PUT 0.0.0.0:5984/auctions
 script:
   - bin/pytest openprocurement/auction/esco/tests/unit -v
+after_success:
+  - coveralls
