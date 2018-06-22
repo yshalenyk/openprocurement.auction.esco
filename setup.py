@@ -29,7 +29,7 @@ ENTRY_POINTS = {
 setup(name='openprocurement.auction.esco',
       version=VERSION,
       description="",
-      long_description=open("README.txt").read() + "\n" +
+      long_description=open("README.rst").read() + "\n" +
                        open(os.path.join("docs", "HISTORY.txt")).read(),
       # Get more strings from
       # http://pypi.python.org/pypi?:action=list_classifiers
@@ -41,7 +41,7 @@ setup(name='openprocurement.auction.esco',
       author='Quintagroup, Ltd.',
       author_email='info@quintagroup.com',
       license='Apache License 2.0',
-      url='https://github.com/openprocurement/openprocurement.auction.esco',
+      url='https://github.com/ProzorroUKR/openprocurement.auction.esco',
       packages=find_packages(exclude=['ez_setup']),
       namespace_packages=['openprocurement', 'openprocurement.auction'],
       include_package_data=True,
