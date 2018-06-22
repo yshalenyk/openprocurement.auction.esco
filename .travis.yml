@@ -20,6 +20,7 @@ before_install:
 install:
   - bin/buildout -N
   - curl -X PUT 0.0.0.0:5984/auctions
+  - pip install coveralls
 script:
   - bin/pytest openprocurement/auction/esco/tests/unit -v
 after_success:
