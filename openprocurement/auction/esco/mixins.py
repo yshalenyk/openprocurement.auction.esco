@@ -34,6 +34,7 @@ from openprocurement.auction.esco.utils import (
 from openprocurement.auction.worker.mixins import DBServiceMixin,\
     PostAuctionServiceMixin, StagesServiceMixin, BiddersServiceMixin, \
     AuditServiceMixin
+from openprocurement.auction.esco.deprecated_auction_config_filter import is_tender_processed_by_auction
 
 
 LOGGER = logging.getLogger("Auction Esco")
@@ -56,9 +57,7 @@ class ESCODBServiceMixin(DBServiceMixin):
         self.get_auction_info(prepare=True)
 
         submissionMethodDetails = self._auction_data['data'].get('submissionMethodDetails', '')
-        prefix = self.worker_defaults.get('PREFIX_NEW_AUCTION', '')
-
-        if prefix and submissionMethodDetails.startswith(prefix):
+        if not is_tender_processed_by_auction(self._auction_data['data'], auction_type="deprecated"):
             LOGGER.info('Skip tender {} as that tender work with new auctions'.format(
                 self._auction_data['data'].get('id')))
 
